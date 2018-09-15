@@ -1,11 +1,9 @@
 var imgs = {
-	logo :"./assets/images/logo.png",
-	loginLogo :"./assets/images/login-logo.png",
-	loginTitle :"./assets/images/raterlogo.png",
-	userLoginTitle :"./assets/images/userlogo.png",
-	adminLoginTitle: "./assets/images/manger.png",
+	banner :"./assets/images/banner.jpg",
+	notice :"./assets/images/notice.gif",
 	loginPerson :"./assets/images/login-person.png",
 	loginLock :"./assets/images/login-lock.png",
+ 
 	open :"./assets/images/open.png",
 	tip :"./assets/images/tip.png",
 	search :"./assets/images/search.png",
@@ -17,6 +15,8 @@ var imgs = {
 	raterLoginBg:'./assets/images/raterlogin.png',
 
 	man:'./assets/images/man.png',
+	book1:'./assets/images/book1.png',
+	book2:'./assets/images/book2.png',
 	group:'./assets/images/group.png',
 	scoreIco:'./assets/images/score-ico.png',
 	logout:'./assets/images/logout.png',
@@ -27,18 +27,16 @@ var imgs = {
 	pass1:'./assets/images/pass1.png',
 	brower:'./assets/images/brower.png',
 	pass2:'./assets/images/pass2.png',
-	reject:'./assets/images/reject.png',
-	reject1:'./assets/images/reject1.png',
 	user:'./assets/images/user.png',
-	media:'./assets/images/media.png',
 	shangbao:'./assets/images/shangbao.png',
 	setting:'./assets/images/setting.png',
-	poster:'./assets/images/poster.gif',
-	upload1:'./assets/images/imgupload.png',
-	upload2: './assets/images/videoupload.png',
-	upload3:'./assets/images/audioupload.png',
-	upload4:'./assets/images/dongmanupload.png',
-	upload5: './assets/images/h5upload.png',
+	qiuzhu:'./assets/images/qiuzhu.png',
+	jiaoliu:'./assets/images/jiaoliu.png',
+	xuzhi:'./assets/images/xuzhi.png',
+	tongxunlu:'./assets/images/tongxunlu.png',
+	kecheng:'./assets/images/kecheng.png',
+	ziliao:'./assets/images/ziliao.png',
+	
 
 	//smile:'./assets/images/smile.png',
 	titleBg:'./assets/images/title-bg.png',
@@ -51,6 +49,10 @@ var imgs = {
 
 
 };
+window.PointerEvent = void 0;
+document.addEventListener('touchmove',(e)=>{e.preventDefault()},{
+	passive:true
+})
 
 /* Date.prototype.Format = function (fmt) { //author: meizz 
 	var o = {
@@ -68,6 +70,72 @@ var imgs = {
 	return fmt;
 }
  */
+
+ window.menus = [
+	 [{
+	 	name: "培训须知",
+	 	img: imgs.xuzhi,
+	 	defaultImg: imgs.xuzhi,
+	 	img1: imgs.xuzhi1,
+	 	width: '65px',
+	 	href: "http://www.wenming.cn/specials/wmcj/2018term/xz/"
+	 }, {
+	 	name: "课程安排",
+	 	img: imgs.kecheng,
+	 	defaultImg: imgs.kecheng,
+	 	width: '54px',
+	 	href: "http://www.wenming.cn/specials/wmcj/2018term/kcap/"
+	 }, {
+	 	name: "新闻中心",
+	 	img: imgs.gonggao,
+	 	defaultImg: imgs.gonggao,
+	 	img1: imgs.gonggao1,
+	 	width: '65px',
+	 	href: 'http://www.wenming.cn/specials/wmcj/2018term/news/'
+	 }],[
+		  {
+		  	name: "我的房间",
+		  	img: imgs.zhusu,
+		  	defaultImg: imgs.zhusu,
+		  	img1: imgs.zhusu1,
+		  	width: '68px'
+		  }, {
+		  	name: "专家授课",
+		  	img: imgs.zuowei,
+		  	defaultImg: imgs.zuowei,
+		  	img1: imgs.zuowei1,
+		  	width: '70px',
+		  	href: 'http://www.wenming.cn/specials/wmcj/2018term/zj/'
+		  }, {
+		  	name: "我的同学",
+		  	img: imgs.tongxunlu,
+		  	defaultImg: imgs.tongxunlu,
+		  	img1: imgs.zuowei1,
+		  	width: '60px'
+		  },
+	 ] ,[
+		 {
+		 	name: "经验交流",
+		 	img: imgs.jiaoliu,
+		 	defaultImg: imgs.jiaoliu,
+		 	img1: imgs.jiaoliu1,
+		 	width: '50px',
+		 	href: 'http://www.wenming.cn/specials/wmcj/2018term/jyjl/'
+		 }, {
+		 	name: "文件汇编",
+		 	img: imgs.ziliao,
+		 	defaultImg: imgs.ziliao,
+		 	img1: imgs.ziliao1,
+		 	width: '60px',
+		 	href: 'http://www.wenming.cn/specials/wmcj/2018term/wjhb/'
+		 }, {
+		 	name: "我要求助",
+		 	img: imgs.qiuzhu,
+		 	defaultImg: imgs.qiuzhu,
+		 	img1: imgs.sousuo1,
+		 	width: '55px'
+		 }
+	 ]];
 
 
 (function () {

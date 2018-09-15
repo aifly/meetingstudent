@@ -1,10 +1,15 @@
 import Vue from "vue";
 import Obserable from './components/lib/obserable';
 import Main from './components/main/index';
+import Login from './components/login/index';
+import Index from './components/index/index';
+import Course from './components/course/index';
 //import Collection from './components/collection/index';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
 ///import 'iview/dist/styles/iview.css';
+import vueTap from 'vue-js-tap';
+Vue.use(vueTap);
 
 Vue.use(VueRouter)
 var obserable = new Obserable();
@@ -23,6 +28,16 @@ const router = new VueRouter({
 			path: '/',
 			name: 'login',
 			component: Login,
+			props: true
+		}, {
+			path: '/index/',
+			name: 'index',
+			component: Index,
+			props: true
+		}, {
+			path: '/course/',
+			name: 'course',
+			component: Course,
 			props: true
 		},
 		

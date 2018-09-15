@@ -1,0 +1,248 @@
+<template>
+	<div  class="wm-index-ui lt-full">
+		<div>
+			<img :src="imgs.banner" alt="">
+		</div>
+		<div>
+			<div class="wm-index-notice">
+				<div><img :src="imgs.notice" alt=""></div>
+				<div>为推进新时代藏学研究与一带一路建设对接，经研究决定，首届丝路藏学学术研讨会将于2018年9月24至27日（24日报到）</div>
+			</div>
+			<div class="wm-menu-list">
+				<ul  v-for="(menu,i) in menus" :key='i'>
+					<li v-for="(m,i) in menu" :key='i'> 
+						<div>
+							<img :style="{width:m.width}" :src="m.defaultImg" alt="">
+						</div>
+						<div :class="m.class">{{m.name}}</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import './index.css';
+	import symbinUtil from '../lib/util';
+
+	import Vue from "vue";
+
+	export default {
+		props:['obserable'],
+		name:'zmitiindex',
+		data(){
+			return{
+				imgs:window.imgs,
+				username:'',
+				password:'',
+				checked:false,
+				isLogined:false,
+				isMove:false,
+				showLoading:false,
+				showError:false,
+				errorMsg:'',
+				provinceList:[
+				
+				],
+				userError:"",
+				companyError:"",
+				usernameError:"",
+				passError:"",
+				repassError:"",
+				mobileError:"",
+				formUser:{
+					cityids:[]
+				},
+				menus:window.menus,
+				viewH:document.documentElement.clientHeight
+			}
+		},
+		components:{
+		},
+		
+		methods:{
+			checkUserName(){
+				if(!this.formUser.username){
+					this.toastError('请输入用户名');
+					return;
+				}
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+"/wmadvuser/isexist/",
+					data:{
+						username:s.formUser.username
+					},
+					success(data){
+						
+						if(data.getret === 0){
+
+						}else{
+							s.toastError(data.getmsg);
+						}
+					}
+				})
+			},
+			toastError(msg =  '用户名不能为空',type='userError'){
+				this[type] = msg;
+				setTimeout(() => {
+					this[type] = '';
+				}, 2000);
+			},
+			reg(){
+				var _this = this;
+				
+				if(!this.formUser.username){
+					this.toastError();
+ 					return;
+				}
+				if(!this.formUser.password){
+					this.toastError('密码不能为空','passError');
+ 					return;
+				}
+				if(!this.formUser.repassword){
+					this.toastError('确认密码不能为空','repassError');
+ 					return;
+				}
+				if(this.formUser.repassword !==this.formUser.password) {
+					this.toastError('两次密码输入不一致','repassError');
+ 					return;
+				}
+				if(!this.formUser.nickname){
+					this.toastError('姓名不能为空','usernameError');
+ 					return;
+				}
+				if(!this.formUser.mobile){
+					this.toastError('手机不能为空','mobileError');
+ 					return;
+				}
+				if(!this.formUser.company){
+					this.toastError('单位不能为空','companyError');
+ 					return;
+				}
+
+				var params = this.formUser;
+				console.log(params);
+				params.userpwd = params.password;
+				params.companyname = params.company;
+				params.provinceid = params.cityids[0];
+				params.cityid = params.cityids[1];
+				params.areaid = params.cityids[2];
+				this.showLoading = true;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/regist/',
+					data:params,
+					success(data){
+						if(data.getret === 0){
+							_this.$Message.success('注册成功');
+							window.location.hash = '#/login'
+						}else{
+							_this.$Message.error(data.getmsg);
+						}
+					}
+				})
+			},
+			getCityById(e,callback){
+				
+				var provinceId = e.__value.split(',')[0];
+				var cityid = e.__value.split(',')[1];
+				var s = this;
+
+				
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/share/getarealist',
+					data:{
+						cityid
+					},
+					success(data){
+						if(data.getret === 0){
+							console.log(data);
+							s.provinceList.forEach((item,i)=>{
+								if(item.value === provinceId*1){
+									item.children.forEach((child,k)=>{
+										if(child.value === cityid*1){
+											child.children = child.children || [];
+											data.list.map((d,l)=>{
+												child.children.push({
+													value:d.cityid,
+													label:d.name,
+													//loading: false
+												})
+											})
+											
+										}
+									})
+									callback();
+									
+								}
+								
+							});
+							
+
+						}
+					}
+
+				})
+			},
+			getCityData(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/share/getcitylist/',
+					data:{},
+					success(data){
+						//console.log(data);
+						if(data.getret === 0){
+							data.list.map((item,i)=>{
+								var children = [];
+								item.children && item.children.map((child,l)=>{
+									children.push({
+										value:child.cityid,
+										label:child.name,
+										loading: false,
+										children:[]
+										
+									})
+								})
+								s.provinceList.push({
+									value:item.cityid,
+									label:item.name,
+									children,
+									loading: false
+								})
+							})
+						}
+					}
+				})
+			},
+			checkCache(){
+				var username = window.localStorage.getItem('wm_username'),
+					password = window.localStorage.getItem('wm_password');
+				
+				if(username && password){
+					this.username = username;
+					this.password = password;
+					this.checked = true;
+				}
+			}
+		
+			
+
+		},
+		mounted(){
+			this.checkCache();
+			this.getCityData();
+		}
+	}
+</script>
+ <style>
+	.demo-spin-icon-load{
+        animation: ani-demo-spin 1s linear infinite;
+    }
+    @keyframes ani-demo-spin {
+        from { transform: rotate(0deg);}
+        50%  { transform: rotate(180deg);}
+        to   { transform: rotate(360deg);}
+    }
+
+ </style>
+ 

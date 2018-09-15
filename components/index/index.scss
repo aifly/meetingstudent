@@ -1,0 +1,76 @@
+﻿@import "../css/base.scss";
+ 
+
+$baseColor: #fcffb4;
+$viewW: 750px;
+$color: #be0000;
+
+.wm-index-ui {
+	@include displayBox(vertical);
+	background:#f5f9ff;
+	&>div{
+		width: 100%;
+		box-sizing: border-box;
+		&:nth-of-type(1){
+			height: 30vh;
+			overflow: hidden;
+		}
+		&:nth-of-type(2){
+			-webkit-box-flex:1;
+			box-flex:1;
+			@include pos(r);
+
+
+			.wm-index-notice{
+				@include pos(a);
+				width: 90%;
+				top: -60px;
+				@include br(10px);
+				left: 5%;
+				max-height: 200px;
+				box-sizing: border-box;
+				padding: 20px 10px;
+				background: #fff;
+				@include displayBox(horizontal);
+				-webkit-box-align: start;
+				overflow: hidden;
+
+				&>div{
+					&:nth-of-type(2){
+						-webkit-box-flex:1;
+						box-flex:1;
+						word-break: break-all;
+					}
+				}
+				
+				
+				img{
+					width: 80px;
+				}
+			}
+
+		}
+	}
+
+
+	.wm-menu-list{
+		width: $viewW;
+		height: 600px;
+		@include pos(a);
+		bottom: 10px;
+		ul{
+			height: 200px;
+			@include displayBox(horizontal);
+			li{
+				height: 100%;
+				box-sizing: border-box;
+				-webkit-box-flex:1;
+				box-flex:1;
+				text-align: center;
+				border:1px solid red;
+			}
+		}
+	}
+	
+
+}

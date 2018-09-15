@@ -1,45 +1,39 @@
 <template>
 	<div  class="wm-login-ui lt-full">
-		<header>
-			<div>
+		<div class="wm-login-title">****会议系统</div>
+
+		<div v-if='loginType === 0'>
+			<div class="wm-login-form">
 				<div>
-					<img :src="imgs.logo"  />
+					<img :src="imgs.loginPerson" alt=""><input placeholder="请输入用户名" v-model="username"/>
 				</div>
 				<div>
-					<a v-if='false' href='#/register'>用户注册></a>
+					<img :src="imgs.loginLock" alt=""><input type="password" v-model="password" placeholder="请输入密码"/>
+				</div>
+				<div class="wm-login-error">{{loginError}}</div>
+			</div>
+			<div class="wm-login-btn" v-tap='[login]' :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
+				确定
+			</div>
+		</div>
+		<div v-else>
+			<div class="wm-login-form">
+				<div>
+					<img :src="imgs.loginPerson" alt=""><input placeholder="请输入手机号" v-model="mobile"/>
+				</div>
+				<div>
+					<img :src="imgs.loginLock" alt=""><input v-model="code" placeholder="请输入验证码"/>
+					<div class="wm-login-getcode" :class="{'active':isPressGetcode}" @touchstart=' isPressGetcode = true' @touchend=' isPressGetcode = false'>获取验证码</div>
 				</div>
 			</div>
-		</header>
-		<section :style="{background:'url('+imgs.adminLoginBg+') no-repeat center 40%',backgroundSize:'100%'}" > 
-			<div class="wm-login-C">
-				<h2>公益广告上报系统 <span>(管理端)</span></h2>
-				<div class="wm-login-form">
-					<div>
-						<label>
-							<img :src="imgs.loginPerson" alt="">
-							<input type="text" v-model="username" placeholder="请输入账号">
-						</label>
-						<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>
-					</div>
-					<div>
-						<label>
-							<img :src="imgs.loginLock" alt="">
-							<input @keydown.13='login' type="password" v-model="password" placeholder="请输入密码">
-						</label>
-					</div>
-					<div>
-						<div @click="login">登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
-						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
-					</div>
-				</div>
-				<div class='wm-browner-tip' v-if='isNotChrome'>
-					<img draggable="false" :src="imgs.brower" alt="">
-				</div>
+			<div class="wm-login-btn" :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
+				确定
 			</div>
-			<div class="wm-copyright">
-				中国文明网 &copy;版权所有
-			</div>
-		</section>
+		</div>
+
+		<div class="wm-login-type" v-tap='[toggleLoginType]'>
+			{{loginType === 0 ?'使用短信验证码登录':'使用账号密码登录'}}
+		</div>
 	</div>
 </template>
 
@@ -54,16 +48,16 @@
 			return{
 				imgs:window.imgs,
 				username:'',
+				loginType:0,
+				mobile:'',
+				code:'',
+				isPress:false,
+				isPressGetcode:false,
 				password:'',
 				loginError:'',
-				checked:false,
-				isLogined:false,
-				isMove:false,
-				isNotChrome:true,
 				showLoading:false,
 				showError:false,
 				errorMsg:'',
-				loginType:"员工登录",
 				viewH:document.documentElement.clientHeight
 			}
 		},
@@ -71,6 +65,9 @@
 		},
 		
 		methods:{
+			toggleLoginType(){
+				this.loginType = this.loginType === 0 ? 1 : 0;
+			},
 			toastError(msg =  '用户名不能为空'){
 				this.loginError = msg;
  				setTimeout(()=>{
@@ -91,20 +88,20 @@
 				var s = this;
 				symbinUtil.ajax({
 					_this:s,
-					url:window.config.baseUrl+'/zmitiadmin/login/',
+					url:window.config.baseUrl+'/zmitistudent/login/',
 					data:{
 						username:_this.username,
 						userpwd:_this.password
 					},
 					success(data){
+						console.log(data)
 						if(data.getret === 0){
 							var param = data;
 							delete param.getret;
 							delete param.getmsg;
 							var p = param.list;
 							
-							symbinUtil.clearCookie('adminlogin');
-							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
+							
 							window.localStorage.setItem('adminlogin',JSON.stringify(p));
 							if(_this.checked){
 								window.localStorage.setItem('wm_adminusername',_this.username);
@@ -113,9 +110,7 @@
 								window.localStorage.setItem('wm_adminusername','');
 								window.localStorage.setItem('wm_adminpassword','');
 							}
-							window.location.hash = '#/student/';
-							
-							_this.$Message.success('登录成功~');
+							window.location.hash = '#/index/';
 							
 							window.location.reload();
 							_this.isLogined = true;
