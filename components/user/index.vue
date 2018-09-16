@@ -1,54 +1,14 @@
 <template>
-	<div class="wm-user-ui">
-		<header>
-			<div>个人中心</div>
-		</header>
-		<div class="wm-user-center">
-			<div>
-				<div class="wm-user-form-item">
-					<label for="">用户名：</label><input type="text"  v-model='userinfo.adminusername'>
-					<div class="wm-user-error" v-if='userError'>{{userError}}</div>
-				</div>
-				<div class="wm-user-form-item">
-					<label for="">密码：</label><input type="password" :disabled='!showPassWord' v-model="userinfo.password">
-					<Button type='primary'  @click='modifyPwd'>{{showPassWord?'确定':'修改密码'}}</Button>
-					<div class="wm-user-error" v-if='passError'>{{passError}}</div>
-				</div>
-				<div class="wm-user-form-item" v-if='showPassWord'>
-					<label for="">确认密码：</label><input type="password" v-model="userinfo.repassword">
-					<div class="wm-user-error" v-if='repassError'>{{repassError}}</div>
-				</div>
-				<div class="wm-user-form-item">
-					<label for="">姓名：</label><input type="text" v-model="userinfo.nickname">
-					<div class="wm-user-error" v-if='usernameError'>{{usernameError}}</div>
-				</div>
-				<div class="wm-user-form-item">
-					<label for="">手机：</label><input type="text" v-model="userinfo.adminmobile">
-					<div class="wm-user-error" v-if='mobileError'>{{mobileError}}</div>
-				</div>
-				<div class="wm-user-form-item ">
-					<label for="">单位：</label><input type="text" v-model="userinfo.company">
-					<div class="wm-user-error" v-if='companyError'>{{companyError}}</div>
-				</div>
-
-				<div class="wm-user-form-item "  v-if='false'>
-					<label for="">地址：</label>
-					<Cascader v-model="userinfo.cityids"  :load-data="getCityById"  change-on-select :data='provinceList'></Cascader>
-				</div>
-
-				<div class="wm-user-form-item ">
-					<label for="">详细地址：</label><input type="text" v-model="userinfo.detailaddress">
-				</div>
-				<div class="wm-user-form-item ">
-					<label for="">邮箱：</label><input type="text"  v-model="userinfo.email">
-				</div>
-				<div class="wm-user-form-item wx-reg-btn" @click="modifyUser">
-					确 定
-				</div>
-			</div>
+	<div class="wm-user-ui lt-full">
+		<div class="wm-user-wrap">
+			<ul>
+				<li class="wm-user-item" v-for='(user,i) in userItemList' :key="i">
+					<div>{{user.label}}</div>
+					<div class="zmiti-text-overflow">{{formUser[user.model] || user.placeholder}} <span></span> </div>
+				</li>
+				
+			</ul>
 		</div>
-
-		
 	</div>
 </template>
 
@@ -72,12 +32,68 @@
 				repassError:"",
 				mobileError:"",
 
-				provinceList:[],
+				provinceList:[
+					 
+				],
+				userItemList:[
+					{
+						 label:"真实姓名",
+						 placeholder:"请填写真实姓名",
+						 model:"studentmame"
+					 },
+					 {
+						 label:"手机号",
+						 placeholder:"请填写手机号",
+						 model:"mobile"
+					 },
+					 {
+						 label:"座机号",
+						 placeholder:"请填写座机号",
+						 model:"telphone"
+					 },{
+						 label:"邮箱",
+						 placeholder:"请填写邮箱",
+						 model:"email"
+					 },{
+						 label:"性别",
+						 placeholder:"请填写性别",
+						 model:"sex"
+					 },{
+						 label:"昵称",
+						 placeholder:"请填写昵称",
+						 model:"nickname"
+					 },{
+						 label:"单位名称",
+						 placeholder:"请填写单位名称",
+						 model:"companyname"
+					 },{
+						 label:"职务",
+						 placeholder:"请填写职务",
+						 model:"job"
+					 },{
+						 label:"地址",
+						 placeholder:"请填写地址",
+						 model:"cityids"
+					 },{
+						 label:"详细地址",
+						 placeholder:"请填写详细地址",
+						 model:"detailaddress"
+					 }
+				],
 
 				formUser:{
-					oldpassword:'',
-					newpassword:'',
-					surepassword:''
+					studentmame:'',
+					nickname:'',
+					mobile:'',
+					telphone:'',
+					email:'',
+					sex:'',
+					companyname:'',
+					job:'',
+					cityids:[],
+					detailaddress:[
+
+					]
 				},
 				userinfo:{}
 			}

@@ -4,125 +4,70 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
-.wm-user-ui{
+.wm-user-ui {
+    @include displayBox(vertical);
 
-    height: 100%;
-   
-    & > div {
-        flex-grow: 1;
-        width: 97%;
-        margin: 10px auto;
+    background: #f5f9ff;
 
-        
-    }
-
-    @include displayFlex(column);
-
-    & > header {
-        background: #fff;
-        height: 50px;
+    .wm-user-wrap {
+        -webkit-box-flex: 1;
+        box-flex: 1;
         width: 100%;
-        line-height: 50px;
+        overflow: hidden;
 
-        & > div {
-            font-size: 20px;
-            margin-left: 40px;
+        @include pos(r);
 
-            @include pos(r);
-
-            &:before {
-                content: "";
-
-                @include pos(a);
-
-                width: 2px;
-                height: 20px;
-                background: #cc0000;
-                top: 15px;
-                left: -10px;
-            }
+        & > ul {
+            background: #fff;
+            width: 90%;
+            margin: 0 auto;
         }
-    }
 
-    .wm-user-center{
-        -webkit-flex-grow:1;
-        flex-grow:1;
-        height: 100%;
-        @include displayFlex(row);
-        -webkit-justify-content: center;
-        justify-content: center;
-        -webkit-align-items:center;
-        align-items:center;
-        margin-top: -20vh;
-    }
+        .wm-user-item {
+            margin: 20px auto 0;
+            padding: 26px;
 
-    .wm-user-form-item{
-        background:#eeeeee;
-        width: 400px;
-        @include br(4px);
-        padding: 0 20px;
-        height: 50px;
-        margin: 4px 0;
-        line-height: 50px;
-        &.wm-require {
-            label {
-                @include pos(r);
-                &:before {
-                    content: '*';
-                    @include pos(a);
-                    color: #be0000;
-                    font-size: 20px;
-                    left: -40px;
+            @include br(10px);
+
+            @include displayBox(horizontal);
+
+            -webkit-box-pack: justify;
+            border-bottom: 2px solid #f5f9ff;
+
+            & > div {
+                &:nth-of-type(1) {
+                    width: 130px;
+                }
+
+                color: #555;
+
+                &:nth-of-type(2) {
+                    -webkit-box-flex: 1;
+                    box-flex: 1;
+                    text-align: right;
+                    color: #98badd;
+
+                    @include pos(r);
+                    span {
+                        width: 24px;
+                        height: 24px;
+                        display: inline-block;
+                        border: 4px solid #bfd0e6;
+
+                        @include pos(r);
+
+                        top: 3px;
+                        margin: 0 5px;
+
+                        @include transform(rotate(45deg) scale(0.8));
+
+                        border-left: none;
+                        border-bottom: none;
+                    }
                 }
             }
         }
-
-         button {
-             @include pos(a);
-             right: 10px;
-             top: 8px;
-         }
-
-
-        .ivu-cascader {
-            @include pos(a);
-            z-index: 10;
-            right: 20px;
-            top: 10px;
-            input {
-                outline: none;
-            }
-        }
-
-        @include pos(r);
-        .wm-user-error {
-            @include pos(a);
-            color: #ff0000;
-            left: 102%;
-            z-index: 1;
-            top: 0;
-            min-width: 150px;
-        }
-
-        input {
-            outline: none;
-            background: transparent;
-            border: 1px solid #ccc;
-            padding: 0;
-            height: 30px;
-            width: 270px;
-            border: none;
-        }
     }
 
-    .wx-reg-btn {
-        margin-top: 20px;
-        background: #fab82e;
-        color: #fff;
-        text-align: center;
-        font-size: 16px;
-        cursor: pointer;
-    }
+   
 }
-
- 

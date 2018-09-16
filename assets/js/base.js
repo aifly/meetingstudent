@@ -50,9 +50,9 @@ var imgs = {
 
 };
 window.PointerEvent = void 0;
-document.addEventListener('touchmove',(e)=>{e.preventDefault()},{
+/* document.addEventListener('touchmove',(e)=>{e.preventDefault()},{
 	passive:true
-})
+}); */
 
 /* Date.prototype.Format = function (fmt) { //author: meizz 
 	var o = {

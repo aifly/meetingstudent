@@ -3,6 +3,7 @@ import Obserable from './components/lib/obserable';
 import Main from './components/main/index';
 import Login from './components/login/index';
 import Index from './components/index/index';
+import User from './components/user/index';
 import Course from './components/course/index';
 //import Collection from './components/collection/index';
 import VueRouter from 'vue-router'
@@ -20,7 +21,7 @@ const router = new VueRouter({
 		//{path: '*', name: 'error', component: FError },
 		
 		{
-			path: '/login/',
+			path: '/login/:meetid/',
 			name: 'login',
 			component: Login,
 			props: true
@@ -38,6 +39,11 @@ const router = new VueRouter({
 			path: '/course/',
 			name: 'course',
 			component: Course,
+			props: true
+		}, {
+			path: '/user/',
+			name: 'user',
+			component: User,
 			props: true
 		},
 		

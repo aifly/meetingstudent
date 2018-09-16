@@ -11,6 +11,10 @@ $color: #298cf0;
 		line-height: 30vh;
 		text-align: center;
 		font-size: 80px;
+
+		&.hide{
+			color:#b20000;
+		}
 	}
 
 	.wm-login-form{

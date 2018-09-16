@@ -1,9 +1,9 @@
 <template>
 	<div  class="wm-login-ui lt-full">
-		<div class="wm-login-title">****会议系统</div>
+		<div class="wm-login-title" :class="{'hide':meetnotexists}">{{meetname}}</div>
 
-		<div v-if='loginType === 0'>
-			<div class="wm-login-form">
+		<div v-if='loginType === 0' >
+			<div class="wm-login-form" v-if='!meetnotexists'>
 				<div>
 					<img :src="imgs.loginPerson" alt=""><input placeholder="请输入用户名" v-model="username"/>
 				</div>
@@ -12,12 +12,12 @@
 				</div>
 				<div class="wm-login-error">{{loginError}}</div>
 			</div>
-			<div class="wm-login-btn" v-tap='[login]' :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
+			<div class="wm-login-btn" v-if='!meetnotexists' v-tap='[login]' :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
 				确定
 			</div>
 		</div>
-		<div v-else>
-			<div class="wm-login-form">
+		<div v-else >
+			<div class="wm-login-form" v-if='!meetnotexists'>
 				<div>
 					<img :src="imgs.loginPerson" alt=""><input placeholder="请输入手机号" v-model="mobile"/>
 				</div>
@@ -25,13 +25,14 @@
 					<img :src="imgs.loginLock" alt=""><input v-model="code" placeholder="请输入验证码"/>
 					<div class="wm-login-getcode" :class="{'active':isPressGetcode}" @touchstart=' isPressGetcode = true' @touchend=' isPressGetcode = false'>获取验证码</div>
 				</div>
+				<div class="wm-login-error">{{loginError}}</div>
 			</div>
-			<div class="wm-login-btn" :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
+			<div class="wm-login-btn" v-if='!meetnotexists' v-tap='[login1]' :class="{'active':isPress}" @touchstart=' isPress = true' @touchend=' isPress = false'>
 				确定
 			</div>
 		</div>
 
-		<div class="wm-login-type" v-tap='[toggleLoginType]'>
+		<div class="wm-login-type" v-tap='[toggleLoginType]' v-if='!meetnotexists'>
 			{{loginType === 0 ?'使用短信验证码登录':'使用账号密码登录'}}
 		</div>
 	</div>
@@ -52,6 +53,8 @@
 				mobile:'',
 				code:'',
 				isPress:false,
+				meetname:'',
+				meetnotexists:false,
 				isPressGetcode:false,
 				password:'',
 				loginError:'',
@@ -74,6 +77,9 @@
  					this.loginError = '';
  				},2000)
 			},
+			login1(){
+				
+			},
 			login(){
 				var _this = this;
 				if(!this.username){
@@ -91,7 +97,8 @@
 					url:window.config.baseUrl+'/zmitistudent/login/',
 					data:{
 						username:_this.username,
-						userpwd:_this.password
+						userpwd:_this.password,
+						meetid:s.meetid
 					},
 					success(data){
 						console.log(data)
@@ -136,9 +143,34 @@
 			
 		},
 		mounted(){
+			this.meetid = this.$route.params.meetid;
+		
+			
 			this.checkCache();
+			var s = this;
 			var ua = navigator.userAgent.toLowerCase();
 			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/)
+
+			symbinUtil.ajax({
+				url:window.config.baseUrl+'/zmitistudent/getmeetinfo',
+				data:{
+					meetid:s.meetid
+				},
+				success(data){
+					if(data.getret === 0){
+						if(data.list.length){
+							s.meetname =  data.list[0].meetname
+						}else{
+							s.meetname = '会议不存在';
+							s.meetnotexists = true;
+						}
+					}
+					else{
+						s.meetname = '会议不存在';
+						s.meetnotexists = true;
+					}
+				}
+			})
 
 		}
 	}

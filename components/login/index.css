@@ -57,6 +57,10 @@
   font-size: 80px;
 }
 
+.wm-login-ui .wm-login-title.hide {
+  color: #b20000;
+}
+
 .wm-login-ui .wm-login-form {
   width: 750px;
 }
