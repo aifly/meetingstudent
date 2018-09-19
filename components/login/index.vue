@@ -92,14 +92,17 @@
 				}
 				this.showLoading = true;
 				var s = this;
+				var data = {
+						username:_this.username,
+						userpwd:_this.password,
+					};
+					if(s.meetid){
+						data.meetid = s.meetid;
+					}
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/zmitistudent/login/',
-					data:{
-						username:_this.username,
-						userpwd:_this.password,
-						meetid:s.meetid
-					},
+					data,
 					success(data){
 						console.log(data)
 						if(data.getret === 0){
@@ -151,26 +154,33 @@
 			var ua = navigator.userAgent.toLowerCase();
 			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/)
 
-			symbinUtil.ajax({
-				url:window.config.baseUrl+'/zmitistudent/getmeetinfo',
-				data:{
-					meetid:s.meetid
-				},
-				success(data){
-					if(data.getret === 0){
-						if(data.list.length){
-							s.meetname =  data.list[0].meetname
-						}else{
+			if(s.meetid){
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/zmitistudent/getmeetinfo',
+					data:{
+						meetid:s.meetid
+					},
+					success(data){
+						console.log(data)
+						if(data.getret === 0){
+							if(data.list.length){
+								Vue.obserable.on('getMeetInfo',()=>{
+									return data.list[0];
+								})
+							}else{
+								/* s.meetname = '会议不存在';
+								s.meetnotexists = true; */
+							}
+						}
+						else{
 							s.meetname = '会议不存在';
 							s.meetnotexists = true;
 						}
 					}
-					else{
-						s.meetname = '会议不存在';
-						s.meetnotexists = true;
-					}
-				}
-			})
+				})
+			}else{
+				s.meetname = '智媒体会议系统';
+			}
 
 		}
 	}

@@ -21,7 +21,7 @@ const router = new VueRouter({
 		//{path: '*', name: 'error', component: FError },
 		
 		{
-			path: '/login/:meetid/',
+			path: '/login/:meetid?/',
 			name: 'login',
 			component: Login,
 			props: true
@@ -36,7 +36,7 @@ const router = new VueRouter({
 			component: Index,
 			props: true
 		}, {
-			path: '/course/',
+			path: '/course/:meetid',
 			name: 'course',
 			component: Course,
 			props: true

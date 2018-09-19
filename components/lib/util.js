@@ -29,10 +29,17 @@ var symbinUtil = {
 
 	ajax(option){
 		var opt = option.data || {};
-	
-		if(option.validate){
-			opt.username = option.validate.username;
-			opt.usertoken = option.validate.usertoken;
+
+		var loginObj = {};
+		try {
+			loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
+
+		} catch (error) {
+			 
+		}
+		if (loginObj.userid){
+			opt.userid = loginObj.userid;
+			opt.accesstoken = loginObj.accesstoken;
 		}
 		
 		$.ajax({

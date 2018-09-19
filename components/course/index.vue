@@ -11,11 +11,11 @@
 					<div class="wm-course-content">
 						<h1>{{course.title}}</h1>
 						<div class="wm-course-teacher">
-							<div>老师：{{course.teachername}}</div>
+							<div>老师：{{course.realname}}</div>
 							<div>教室：{{course.classroom}}</div>
 						</div>
 						<div class="wm-course-time">
-							时间：{{course.lessondate}}
+							时间：{{course.lessonstarttime}} - {{course.lessonendtime}}
 						</div>
 						<div class="wm-course-action">
 							<div>请假</div>
@@ -43,7 +43,7 @@
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
 				courseList:[
-					{
+					/* {
 						syllabusid:'1',
 						meetid:1,
 						meetname:'会议',
@@ -56,7 +56,7 @@
 						latitude:'',
 						longitude:"",
 						comment:'',
-					}
+					} */
 				]
 			}
 		},
@@ -125,15 +125,29 @@
 				this.scroll = new IScroll(this.$refs['page'],{
 
 				});
+			},
+			getCourseList(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/zmitistudent/getcourselist',
+					data:{
+						meetid:s.$route.params.meetid
+					},
+					success(data){
+						if(data.getret ===0 ){
+							console.log(data);
+							s.courseList = data.list;
+						}
+					}
+				})
 			}
 
 		},
 		mounted(){
 			window.ss = this;
 			this.showCityInfo();
-			for(var i =0;i<=4;i++){
-				this.courseList = this.courseList.concat(this.courseList);
-			}
+			this.getCourseList();
+			
 			this.initScroll();
 
 			setTimeout(() => {
