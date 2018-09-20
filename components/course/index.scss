@@ -1,102 +1,179 @@
 ﻿@import "../css/base.scss";
- 
 
 $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
 .wm-course-ui {
-	@include displayBox(vertical);
-	background:#f5f9ff;
-	
+    @include displayBox(vertical);
 
-	.wm-course-list-wrap{
-		overflow: hidden;
+    background: #f5f9ff;
 
-		&>ul{
-			margin: 0 auto;
-			width: $viewW - 100;
-			padding-bottom: 50px;
-			li{
-				@include displayBox(horizontal);
-				-webkit-box-pack: justify;
-				-webkit-box-align: start;
-				background: #fff;
-				margin: 20px 0;
-				@include pos(r);
-				padding: 20px 0;
-				@include br(20px);
-				&:before{
-					content:'';
-					width: 10px;
-					height: 100%;
-					background: #f45486;
-					@include pos(a);
-					left: 0;
-					top: 0;
-					border-top-left-radius: 20px;
-					border-bottom-left-radius: 20px;
-				}
-				&:nth-of-type(2n+1){
-					&::before{
-						background:#6d7bff;
-					}
-				}
-				.wm-course-ico{
-					width: 80px;
-					margin:0 30px;;
-				}
-				.wm-course-content{
-					-webkit-box-flex:1;
-					color:#314a83;
-					margin-right: 20px;
-					&>h1{
-						font-weight: normal;
-						font-size: 34px;
-						height: 80px;
-						line-height: 80px;;
-					}
+    .wm-course-list-wrap {
+        overflow: hidden;
 
-					.wm-course-teacher,
-					.wm-course-action {
-						@include displayBox(horizontal);
-						font-size: 26px;
-					}
-					.wm-course-action{
-						-webkit-box-pack:end;
-						&>div{
-							font-size: 30px;
-							&:nth-of-type(1){
-								padding:10px 20px;
-							}
-							&:nth-of-type(2){
-								background:#298cf0;
-								color:#fff;
-								text-align: center;
-								padding: 10px 40px;
-								@include br(30px);
-								margin-left: 30px;
-							}
+        & > ul {
+            margin: 0 auto;
+            width: $viewW - 100;
+            padding-bottom: 50px;
+
+            li {
+                @include displayBox(horizontal);
+
+                -webkit-box-pack: justify;
+                -webkit-box-align: start;
+                background: #fff;
+                margin: 20px 0;
+
+                @include pos(r);
+
+                padding: 20px 0;
+
+                @include br(20px);
+
+                &:before {
+                    content: '';
+                    width: 10px;
+                    height: 100%;
+                    background: #f45486;
+
+                    @include pos(a);
+
+                    left: 0;
+                    top: 0;
+                    border-top-left-radius: 20px;
+                    border-bottom-left-radius: 20px;
+                }
+
+                &:nth-of-type(2n+1) {
+                    &::before {
+                        background: #6d7bff;
+                    }
+                }
+
+                .wm-course-ico {
+                    width: 80px;
+                    margin: 0 30px;
+                }
+
+                .wm-course-content {
+                    -webkit-box-flex: 1;
+                    color: #314a83;
+                    margin-right: 20px;
+
+                    & > h1 {
+                        font-weight: normal;
+                        font-size: 34px;
+                        height: 80px;
+                        line-height: 80px;
+                    }
+
+                    .wm-course-teacher,
+                    .wm-course-action {
+                        @include displayBox(horizontal);
+
+                        font-size: 26px;
+                    }
+
+                    .wm-course-action {
+                        -webkit-box-pack: end;
+
+                        & > div {
+                            font-size: 30px;
+
+                            &:nth-of-type(1) {
+                                padding: 10px 20px;
+                            }
+
+                            &:nth-of-type(2) {
+                                background: #298cf0;
+                                color: #fff;
+                                text-align: center;
+                                padding: 10px 40px;
+
+                                @include br(30px);
+
+                                margin-left: 30px;
+                            }
+
+                            &.wm-has-signup {
+                                background: #f7f7f7;
+                                color: #c5c8ce;
+                            }
+                        }
+                    }
+
+                    .wm-course-leave-C {
+                        border: 1px solid #ddd;
+
+                        @include br(10px);
+
+                        margin-top: 16px;
+
+						@include pos(r);
+						
+						&:before{
+							content:'';
+							@include pos(a);
+							width: 40px;
+							height: 40px;
+							@include br(4px);
+							@include transform(rotate(45deg));
+							background: #fff;
+							left: 52%;;
+							top: -20px;
+							border-left: 1px solid #ddd;
+							border-top: 1px solid  #ddd;
 						}
-					}
-					.wm-course-teacher{
-						-webkit-box-pack: justify;
-						margin: 10px 0;
-						&>div{
-							&:nth-of-type(2){
-								color:#98badd;
-							}
-						}
-					}
-					.wm-course-time{
-						color:#98badd;
-						font-size: 24px;
-						line-height: 60px;;
-					}
-				}
-			}
-		}
-	}
-	
 
+                        input {
+                            width: 60%;
+                            border: none;
+                            height: 80px;
+                            font-size: 30px;
+							outline: none;
+							margin-left: 20px;;
+							&::-webkit-input-placeholder{
+								color:#ddd;
+							}
+                        }
+
+                        span {
+                            @include pos(a);
+
+                            width: 80px;
+                            height: 80px;
+
+							@include br;
+							right: 0;
+							@include transform(scale(.9));
+
+							background: #11d35d;;
+							font-size:24px;
+							color:#fff;
+							text-align: center;
+							line-height: 80px;
+                        }
+                    }
+
+                    .wm-course-teacher {
+                        -webkit-box-pack: justify;
+                        margin: 10px 0;
+
+                        & > div {
+                            &:nth-of-type(2) {
+                                color: #98badd;
+                            }
+                        }
+                    }
+
+                    .wm-course-time {
+                        color: #98badd;
+                        font-size: 24px;
+                        line-height: 60px;
+                    }
+                }
+            }
+        }
+    }
 }

@@ -18,14 +18,18 @@
 							时间：{{course.lessonstarttime}} - {{course.lessonendtime}}
 						</div>
 						<div class="wm-course-action">
-							<div>请假</div>
-							<div>签到</div>
+							<div v-tap='[toggleLeave,course,i]'>{{course.status === 2 ? '已请假':course.status === 2 ? '请假已通过':''}}</div>
+							<div :class='{"wm-has-signup":course.status}' v-tap='[signup,course]'>签到</div>
+						</div>
+						<div class='wm-course-leave-C' v-if='course.showLeave'>
+							<input v-model="course.excuse" placeholder="请输入请假理由~~" /><span v-tap='[leave,course]'>提交</span>
 						</div>
 					</div>
 
 				</li>
 			</ul>
 		</div>
+		<Toast :errorMsg='errorMsg'></Toast>
 	</div>
 </template>
 
@@ -34,6 +38,7 @@
 	import symbinUtil from '../lib/util';
 	import IScroll from 'iscroll';
 	import Vue from "vue";
+	import Toast from '../toast/toast';
 
 	export default {
 		props:['obserable'],
@@ -42,6 +47,9 @@
 			return{
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
+				lat:0,
+				lng:0,
+				errorMsg:"",
 				courseList:[
 					/* {
 						syllabusid:'1',
@@ -61,19 +69,66 @@
 			}
 		},
 		components:{
+			Toast
 		},
 		
 		methods:{
+
+			signup(course){//签到
+				switch (course.status) {
+					case 1:
+					this.errorMsg = '您已签到';
+					break;
+					case 2:
+					this.errorMsg = '您已请假';
+					break;
+				}
+
+				setTimeout(() => {
+					this.errorMsg = '';
+				}, 2000);
+			},
+			toggleLeave(course,index){
+				course.showLeave = !course.showLeave;
+				this.courseList = this.courseList.concat([]);
+			},
+
+			leave(course){
+				if(course.status === 2 || course.status === 3){
+					this.errorMsg = '您已请假';
+					setTimeout(() => {
+						this.errorMsg = '';
+					}, 2000);
+					return;
+				}
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/zmitistudent/signcourse',
+					data:{
+						syllabusid:course.syllabusid,
+						status:2,//请假未审批
+						excuse:course.excuse,
+						latitude:s.lat,
+						longitude:s.lng
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							course.showLeave = false;
+						}
+					}
+				})
+			},
 			
 			showCityInfo() {
 				//实例化城市查询类
 
 
-				return;
 
-			var	map = new AMap.Map('map', {
+				var	map = new AMap.Map('map', {
 					resizeEnable : true
 				});
+				var s = this;
 				map.plugin('AMap.Geolocation', function() {
 					var geolocation = new AMap.Geolocation({
 						enableHighAccuracy : true, //是否使用高精度定位，默认:true
@@ -85,7 +140,8 @@
 					map.addControl(geolocation);
 					geolocation.getCurrentPosition();
 					AMap.event.addListener(geolocation, 'complete', (data)=>{
-						
+						s.lat = data.position.lat;
+						s.lng = data.position.lng;
 						console.log(data)
 					});
 					//返回定位信息
@@ -136,6 +192,7 @@
 					success(data){
 						if(data.getret ===0 ){
 							console.log(data);
+							
 							s.courseList = data.list;
 						}
 					}

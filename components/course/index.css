@@ -145,6 +145,61 @@
   margin-left: 30px;
 }
 
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div.wm-has-signup {
+  background: #f7f7f7;
+  color: #c5c8ce;
+}
+
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-top: 16px;
+  position: relative;
+}
+
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C:before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  background: #fff;
+  left: 52%;
+  top: -20px;
+  border-left: 1px solid #ddd;
+  border-top: 1px solid  #ddd;
+}
+
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C input {
+  width: 60%;
+  border: none;
+  height: 80px;
+  font-size: 30px;
+  outline: none;
+  margin-left: 20px;
+}
+
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C input::-webkit-input-placeholder {
+  color: #ddd;
+}
+
+.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C span {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  right: 0;
+  -webkit-transform: scale(0.9);
+  transform: scale(0.9);
+  background: #11d35d;
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
+  line-height: 80px;
+}
+
 .wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher {
   -webkit-box-pack: justify;
   margin: 10px 0;
