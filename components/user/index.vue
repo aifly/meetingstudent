@@ -1,13 +1,15 @@
 <template>
 	<div class="wm-user-ui lt-full">
-		<div class="wm-user-wrap">
+		<div class="wm-user-wrap" ref='page'>
 			<ul>
 				<li class="wm-user-item" v-for='(user,i) in userItemList' :key="i">
 					<div>{{user.label}}</div>
 					<div class="zmiti-text-overflow">{{formUser[user.model] || user.placeholder}} <span></span> </div>
 				</li>
-				
 			</ul>
+		</div>
+		<div class='wm-user-modify-page' v-if='currentModelIndex>-1'>
+			<input v-model="userItemList[currentModelIndex].model"/>
 		</div>
 	</div>
 </template>
@@ -16,11 +18,14 @@
 	import './index.css';
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
+	import IScroll from 'iscroll';
+	
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
 		data(){
 			return{
+
 				visible:false,
 				imgs:window.imgs,
 				showPassWord:false,
@@ -31,6 +36,8 @@
 				passError:"",
 				repassError:"",
 				mobileError:"",
+
+				currentModelIndex:-1,
 
 				provinceList:[
 					 
@@ -114,6 +121,13 @@
 			if(this.userinfo.isadmin){
 				//window.location.hash = '/periods';
 			}
+			document.title = '个人中心';
+			this.scroll = new IScroll(this.$refs['page'],{});
+
+			setTimeout(() => {
+				this.scroll.refresh();
+			}, 100);
+			
 		},
 		
 		methods:{
@@ -270,37 +284,7 @@
 
 				})
 			},
-			ok(){
-				if(this.formUser.newpassword  !== this.formUser.surepassword){
-					this.$Message.error('新密码和确认密码不一致');
-					return false;
-				}
-				var s = this;
-
-				symbinUtil.ajax({
-					_this:s,
-					url:window.config.baseUrl+'/wmuser/modify_password',
-					validate:s.validate,
-					data:{
-						oldpassword:s.formUser.oldpassword,
-						password:s.formUser.newpassword,
-						repassword:s.formUser.surepassword
-					},success(data){
-
-						if(data.getret === 0){
-							s.$Message.warning('请重新登录');
-							window.location.hash =  '/login';
-						}else{
-							s.$Message.error(data.getmsg);
-						}
-					}
-
-				})
-				
-			},
-			cancel(){
-				this.formUser = {};
-			}
+			 
 		}
 	}
 </script>

@@ -10,7 +10,7 @@
 		    height: 100%;
 		    padding: 0;margin: 0;
 		}
-
+		* { touch-action: pan-y; }
 		@font-face {
 		  font-family: "Ionicons";
 		  src: url("./assets/fonts/font.eot?v=2.0.0");
@@ -23,7 +23,13 @@
 		}
 	</style>
 	<script>
-		window.protocol = location.protocol;
+		//window.protocol = location.protocol;
+		window.dispatchEvent = null;
+		document.addEventListener("touchmove",function(e){
+			e.preventDefault();
+		},{
+			passive:false
+		})
 	</script>
 	<style>
 		

@@ -42,13 +42,14 @@
 	import './index.css';
 	import symbinUtil from '../lib/util';
 	import Vue from "vue";
+	document.title = '用户登录';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
 		data(){
 			return{
 				imgs:window.imgs,
-				username:'',
+				username:'15718879215',
 				loginType:0,
 				mobile:'',
 				code:'',
@@ -56,7 +57,7 @@
 				meetname:'',
 				meetnotexists:false,
 				isPressGetcode:false,
-				password:'',
+				password:'111111',
 				loginError:'',
 				showLoading:false,
 				showError:false,
@@ -82,6 +83,7 @@
 			},
 			login(){
 				var _this = this;
+				
 				if(!this.username){
 					this.toastError();
  					return;
@@ -89,6 +91,10 @@
 				if(!this.password){
 					this.toastError('密码不能为空');
  					return;
+				}
+				window.onerror = (err)=>{
+					alert(err);
+					
 				}
 				this.showLoading = true;
 				var s = this;
@@ -99,10 +105,13 @@
 					if(s.meetid){
 						data.meetid = s.meetid;
 					}
+					
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/zmitistudent/login/',
 					data,
+					error(){
+					},
 					success(data){
 						console.log(data)
 						if(data.getret === 0){
@@ -120,7 +129,12 @@
 								window.localStorage.setItem('wm_adminusername','');
 								window.localStorage.setItem('wm_adminpassword','');
 							}
-							window.location.hash = '#/index/';
+							var rountname = '#/meetlist/';
+							if(s.meetid){
+								rountname = '#/index/'+s.meetid;
+							}
+							window.location.hash = rountname;
+							
 							
 							window.location.reload();
 							_this.isLogined = true;
@@ -166,7 +180,9 @@
 							if(data.list.length){
 								Vue.obserable.on('getMeetInfo',()=>{
 									return data.list[0];
-								})
+								});
+								window.localStorage.setItem('meetinfo',JSON.stringify(data.list[0]));
+								s.meetname = data.list[0].meetname;
 							}else{
 								/* s.meetname = '会议不存在';
 								s.meetnotexists = true; */

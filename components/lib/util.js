@@ -35,9 +35,10 @@ var symbinUtil = {
 			loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
 
 		} catch (error) {
-			 
+			 loginObj = {}
 		}
-		if (loginObj.userid){
+	
+		if (loginObj && loginObj.userid) {
 			opt.userid = loginObj.userid;
 			opt.accesstoken = loginObj.accesstoken;
 		}

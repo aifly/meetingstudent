@@ -6,10 +6,7 @@ var imgs = {
  
 	open :"./assets/images/open.png",
 	tip :"./assets/images/tip.png",
-	search :"./assets/images/search.png",
 	back :"./assets/images/back.png",
-	reset :"./assets/images/reset.png",
-	guidang :"./assets/images/guidang.png",
 	loginBg:"./assets/images/login-bg.jpg",
 	adminLoginBg:'./assets/images/adminlogin.png',
 	raterLoginBg:'./assets/images/raterlogin.png',
@@ -17,35 +14,20 @@ var imgs = {
 	man:'./assets/images/man.png',
 	book1:'./assets/images/book1.png',
 	book2:'./assets/images/book2.png',
-	group:'./assets/images/group.png',
-	scoreIco:'./assets/images/score-ico.png',
 	logout:'./assets/images/logout.png',
 	file:'./assets/images/file.png',
-	uncheck:'./assets/images/uncheck.png',
-	uncheck1:'./assets/images/uncheck1.png',
-	pass:'./assets/images/pass.png',
-	pass1:'./assets/images/pass1.png',
-	brower:'./assets/images/brower.png',
-	pass2:'./assets/images/pass2.png',
 	user:'./assets/images/user.png',
-	shangbao:'./assets/images/shangbao.png',
-	setting:'./assets/images/setting.png',
-	qiuzhu:'./assets/images/qiuzhu.png',
-	jiaoliu:'./assets/images/jiaoliu.png',
-	xuzhi:'./assets/images/xuzhi.png',
-	tongxunlu:'./assets/images/tongxunlu.png',
-	kecheng:'./assets/images/kecheng.png',
-	ziliao:'./assets/images/ziliao.png',
-	
 
-	//smile:'./assets/images/smile.png',
+	baodao:'./assets/images/signin-ico.png',
+	course:'./assets/images/course-ico.png',
+	msg:'./assets/images/info-ico.png',
+	tontxunlu:'./assets/images/txl-ico.png',
+	leave:'./assets/images/leave-ico.png',
+	kaoping: './assets/images/kaoqin-ico.png',
+	kaoqin: './assets/images/kaoqin-ico.png',
+	homework:'./assets/images/homework-ico.png',
+	my:'./assets/images/user-ico.png',
 	titleBg:'./assets/images/title-bg.png',
-	ruleIco:'./assets/images/rule-ico.png',
-	imgIco:'./assets/images/img-ico.png',
-	h5Ico:'./assets/images/h5.png',
-	videoIco:'./assets/images/video-ico.png',
-	audioIco:'./assets/images/audio-ico.png',
-	dongmanIco:'./assets/images/dongman-ico.png',
 
 
 };
@@ -73,67 +55,61 @@ window.PointerEvent = void 0;
 
  window.menus = [
 	 [{
-	 	name: "培训须知",
-	 	img: imgs.xuzhi,
-	 	defaultImg: imgs.xuzhi,
-	 	img1: imgs.xuzhi1,
+	 	name: "报道",
+	 	img: imgs.signin,
+	 	defaultImg: imgs.signin,
 	 	width: '65px',
-	 	href: "http://www.wenming.cn/specials/wmcj/2018term/xz/"
+	 	href: "/user/"
 	 }, {
 	 	name: "课程安排",
-	 	img: imgs.kecheng,
-	 	defaultImg: imgs.kecheng,
+	 	img: imgs.course,
+	 	defaultImg: imgs.course,
 	 	width: '54px',
-	 	href: "http://www.wenming.cn/specials/wmcj/2018term/kcap/"
+	 	href: "/course/"
 	 }, {
-	 	name: "新闻中心",
-	 	img: imgs.gonggao,
-	 	defaultImg: imgs.gonggao,
-	 	img1: imgs.gonggao1,
+	 	name: "信息",
+	 	img: imgs.msg,
+	 	defaultImg: imgs.msg,
 	 	width: '65px',
-	 	href: 'http://www.wenming.cn/specials/wmcj/2018term/news/'
+	 	href: '/msg/'
 	 }],[
 		  {
-		  	name: "我的房间",
-		  	img: imgs.zhusu,
-		  	defaultImg: imgs.zhusu,
-		  	img1: imgs.zhusu1,
+		  	name: "通讯录",
+		  	img: imgs.tontxunlu,
+		  	defaultImg: imgs.tontxunlu,
 		  	width: '68px'
 		  }, {
-		  	name: "专家授课",
-		  	img: imgs.zuowei,
-		  	defaultImg: imgs.zuowei,
-		  	img1: imgs.zuowei1,
+		  	name: "请假",
+		  	img: imgs.leave,
+		  	defaultImg: imgs.leave,
 		  	width: '70px',
-		  	href: 'http://www.wenming.cn/specials/wmcj/2018term/zj/'
+		  	href: '/leave/'
 		  }, {
-		  	name: "我的同学",
-		  	img: imgs.tongxunlu,
-		  	defaultImg: imgs.tongxunlu,
-		  	img1: imgs.zuowei1,
-		  	width: '60px'
+		  	name: "考评",
+		  	img: imgs.kaopin,
+		  	defaultImg: imgs.kaopin,
+			  width: '60px',
+			  href: '/appraiser/'
 		  },
 	 ] ,[
 		 {
-		 	name: "经验交流",
-		 	img: imgs.jiaoliu,
-		 	defaultImg: imgs.jiaoliu,
-		 	img1: imgs.jiaoliu1,
+		 	name: "考勤",
+		 	img: imgs.kaoqin,
+		 	defaultImg: imgs.kaoqin,
 		 	width: '50px',
-		 	href: 'http://www.wenming.cn/specials/wmcj/2018term/jyjl/'
+		 	href: '/kaoqin/'
 		 }, {
-		 	name: "文件汇编",
-		 	img: imgs.ziliao,
-		 	defaultImg: imgs.ziliao,
-		 	img1: imgs.ziliao1,
+		 	name: "作业",
+		 	img: imgs.homework,
+		 	defaultImg: imgs.homework,
 		 	width: '60px',
-		 	href: 'http://www.wenming.cn/specials/wmcj/2018term/wjhb/'
+		 	href: '/homework/'
 		 }, {
-		 	name: "我要求助",
-		 	img: imgs.qiuzhu,
-		 	defaultImg: imgs.qiuzhu,
-		 	img1: imgs.sousuo1,
-		 	width: '55px'
+		 	name: "我的",
+		 	img: imgs.my,
+		 	defaultImg: imgs.my,
+			width: '55px',
+			href:'/my/'
 		 }
 	 ]];
 
@@ -168,7 +144,7 @@ window.PointerEvent = void 0;
 		}]
 	}
 
-	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
+	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1 ||window.location.href.indexOf('192.168.') > -1) {
 		window.config.baseUrl = "https://api.symbin.cn/v1";
 	}
 

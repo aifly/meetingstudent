@@ -1,7 +1,11 @@
 <template>
 	<div  class="wm-index-ui lt-full">
-		<div>
-			<img :src="imgs.banner" alt="">
+		<div class='wm-index-banner'>
+			<img v-if='meeting.bannerurl' :src="imgs.banner" alt="">
+			<div v-else>
+				<h2>{{meeting.meetname}}</h2>
+				<div>{{meeting.startdate + ' - ' + meeting.enddate}}</div>
+			</div>
 		</div>
 		<div>
 			<div class="wm-index-notice">
@@ -15,6 +19,7 @@
 							<img :style="{width:m.width}" :src="m.defaultImg" alt="">
 						</div>
 						<div :class="m.class">{{m.name}}</div>
+						<router-link class='lt-full' :to='m.href+$route.params.meetid'></router-link>
 					</li>
 				</ul>
 			</div>
@@ -51,6 +56,7 @@
 				passError:"",
 				repassError:"",
 				mobileError:"",
+				meeting:{},
 				formUser:{
 					cityids:[]
 				},
@@ -62,6 +68,7 @@
 		},
 		
 		methods:{
+			
 			checkUserName(){
 				if(!this.formUser.username){
 					this.toastError('请输入用户名');
@@ -89,59 +96,7 @@
 					this[type] = '';
 				}, 2000);
 			},
-			reg(){
-				var _this = this;
-				
-				if(!this.formUser.username){
-					this.toastError();
- 					return;
-				}
-				if(!this.formUser.password){
-					this.toastError('密码不能为空','passError');
- 					return;
-				}
-				if(!this.formUser.repassword){
-					this.toastError('确认密码不能为空','repassError');
- 					return;
-				}
-				if(this.formUser.repassword !==this.formUser.password) {
-					this.toastError('两次密码输入不一致','repassError');
- 					return;
-				}
-				if(!this.formUser.nickname){
-					this.toastError('姓名不能为空','usernameError');
- 					return;
-				}
-				if(!this.formUser.mobile){
-					this.toastError('手机不能为空','mobileError');
- 					return;
-				}
-				if(!this.formUser.company){
-					this.toastError('单位不能为空','companyError');
- 					return;
-				}
-
-				var params = this.formUser;
-				console.log(params);
-				params.userpwd = params.password;
-				params.companyname = params.company;
-				params.provinceid = params.cityids[0];
-				params.cityid = params.cityids[1];
-				params.areaid = params.cityids[2];
-				this.showLoading = true;
-				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadvuser/regist/',
-					data:params,
-					success(data){
-						if(data.getret === 0){
-							_this.$Message.success('注册成功');
-							window.location.hash = '#/login'
-						}else{
-							_this.$Message.error(data.getmsg);
-						}
-					}
-				})
-			},
+			 
 			getCityById(e,callback){
 				
 				var provinceId = e.__value.split(',')[0];
@@ -229,8 +184,16 @@
 
 		},
 		mounted(){
-			this.checkCache();
-			this.getCityData();
+			/* this.checkCache();
+			this.getCityData(); */
+			this.meeting = Vue.obserable.trigger({
+				type:'getMeetInfo'
+			}) || JSON.parse(window.localStorage.getItem('meetinfo'));
+
+			console.log(this.meeting);
+
+			
+
 		}
 	}
 </script>

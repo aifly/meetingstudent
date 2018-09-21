@@ -76,17 +76,25 @@
 
 	var _componentsCourseIndex2 = _interopRequireDefault(_componentsCourseIndex);
 
+	var _componentsMeetlistIndex = __webpack_require__(49);
+
+	var _componentsMeetlistIndex2 = _interopRequireDefault(_componentsMeetlistIndex);
+
 	//import Collection from './components/collection/index';
 
-	var _vueRouter = __webpack_require__(44);
+	var _vueRouter = __webpack_require__(54);
 
 	var _vueRouter2 = _interopRequireDefault(_vueRouter);
 
-	__webpack_require__(45);
+	__webpack_require__(55);
 
 	///import 'iview/dist/styles/iview.css';
 
-	var _vueJsTap = __webpack_require__(47);
+	var _componentsLibUtil = __webpack_require__(14);
+
+	var _componentsLibUtil2 = _interopRequireDefault(_componentsLibUtil);
+
+	var _vueJsTap = __webpack_require__(57);
 
 	var _vueJsTap2 = _interopRequireDefault(_vueJsTap);
 
@@ -101,7 +109,7 @@
 		//{path: '*', name: 'error', component: FError },
 
 		{
-			path: '/login/:meetid/',
+			path: '/login/:meetid?/',
 			name: 'login',
 			component: _componentsLoginIndex2['default'],
 			props: true
@@ -111,21 +119,53 @@
 			component: _componentsLoginIndex2['default'],
 			props: true
 		}, {
-			path: '/index/',
+			path: '/index/:meetid?',
 			name: 'index',
 			component: _componentsIndexIndex2['default'],
 			props: true
 		}, {
-			path: '/course/',
+			path: '/course/:meetid',
 			name: 'course',
 			component: _componentsCourseIndex2['default'],
 			props: true
 		}, {
-			path: '/user/',
+			path: '/meetlist/',
+			name: 'meetlist',
+			component: _componentsMeetlistIndex2['default'],
+			props: true
+		}, {
+			path: '/user/:meetid?/',
 			name: 'user',
 			component: _componentsUserIndex2['default'],
+			title: '个人中心',
 			props: true
 		}]
+	});
+
+	var userinfo = _componentsLibUtil2['default'].getUserInfo();
+	router.beforeEach(function (to, from, next) {
+		//导航守卫。
+		//console.log(to,from);
+		if (to.name === 'login' || to.name === '/') {
+			next();
+			return;
+		}
+		_componentsLibUtil2['default'].ajax({
+			url: window.config.baseUrl + '/zmitistudent/judgelogin',
+			data: {
+				userid: userinfo.userid,
+				accesstoken: userinfo.accesstoken
+			},
+			error: function error() {
+				next();
+			},
+			success: function success(data) {
+				if (data.getret !== 0) {
+					router.push({ name: 'login' });
+				}
+				next();
+			}
+		});
 	});
 
 	new _vue2['default']({
@@ -11988,9 +12028,16 @@
 		ajax: function ajax(option) {
 			var opt = option.data || {};
 
-			if (option.validate) {
-				opt.username = option.validate.username;
-				opt.usertoken = option.validate.usertoken;
+			var loginObj = {};
+			try {
+				loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
+			} catch (error) {
+				loginObj = {};
+			}
+
+			if (loginObj && loginObj.userid) {
+				opt.userid = loginObj.userid;
+				opt.accesstoken = loginObj.accesstoken;
 			}
 
 			$.ajax({
@@ -12204,13 +12251,14 @@
 
 	var _vue2 = _interopRequireDefault(_vue);
 
+	document.title = '用户登录';
 	exports['default'] = {
 		props: ['obserable'],
 		name: 'zmitiindex',
 		data: function data() {
 			return {
 				imgs: window.imgs,
-				username: '',
+				username: '15718879215',
 				loginType: 0,
 				mobile: '',
 				code: '',
@@ -12218,7 +12266,7 @@
 				meetname: '',
 				meetnotexists: false,
 				isPressGetcode: false,
-				password: '',
+				password: '111111',
 				loginError: '',
 				showLoading: false,
 				showError: false,
@@ -12245,6 +12293,7 @@
 			login1: function login1() {},
 			login: function login() {
 				var _this = this;
+
 				if (!this.username) {
 					this.toastError();
 					return;
@@ -12253,16 +12302,24 @@
 					this.toastError('密码不能为空');
 					return;
 				}
+				window.onerror = function (err) {
+					alert(err);
+				};
 				this.showLoading = true;
 				var s = this;
+				var data = {
+					username: _this.username,
+					userpwd: _this.password
+				};
+				if (s.meetid) {
+					data.meetid = s.meetid;
+				}
+
 				_libUtil2['default'].ajax({
 					_this: s,
 					url: window.config.baseUrl + '/zmitistudent/login/',
-					data: {
-						username: _this.username,
-						userpwd: _this.password,
-						meetid: s.meetid
-					},
+					data: data,
+					error: function error() {},
 					success: function success(data) {
 						console.log(data);
 						if (data.getret === 0) {
@@ -12279,7 +12336,11 @@
 								window.localStorage.setItem('wm_adminusername', '');
 								window.localStorage.setItem('wm_adminpassword', '');
 							}
-							window.location.hash = '#/index/';
+							var rountname = '#/meetlist/';
+							if (s.meetid) {
+								rountname = '#/index/' + s.meetid;
+							}
+							window.location.hash = rountname;
 
 							window.location.reload();
 							_this.isLogined = true;
@@ -12309,25 +12370,33 @@
 			var ua = navigator.userAgent.toLowerCase();
 			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/);
 
-			_libUtil2['default'].ajax({
-				url: window.config.baseUrl + '/zmitistudent/getmeetinfo',
-				data: {
-					meetid: s.meetid
-				},
-				success: function success(data) {
-					if (data.getret === 0) {
-						if (data.list.length) {
-							s.meetname = data.list[0].meetname;
+			if (s.meetid) {
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/zmitistudent/getmeetinfo',
+					data: {
+						meetid: s.meetid
+					},
+					success: function success(data) {
+						console.log(data);
+						if (data.getret === 0) {
+							if (data.list.length) {
+								_vue2['default'].obserable.on('getMeetInfo', function () {
+									return data.list[0];
+								});
+								s.meetname = data.list[0].meetname;
+							} else {
+								/* s.meetname = '会议不存在';
+	       s.meetnotexists = true; */
+							}
 						} else {
-							s.meetname = '会议不存在';
-							s.meetnotexists = true;
-						}
-					} else {
-						s.meetname = '会议不存在';
-						s.meetnotexists = true;
+								s.meetname = '会议不存在';
+								s.meetnotexists = true;
+							}
 					}
-				}
-			});
+				});
+			} else {
+				s.meetname = '智媒体会议系统';
+			}
 		}
 	};
 
@@ -12474,6 +12543,7 @@
 	// 							<img :style="{width:m.width}" :src="m.defaultImg" alt="">
 	// 						</div>
 	// 						<div :class="m.class">{{m.name}}</div>
+	// 						<router-link class='lt-full' :to='m.href+$route.params.meetid'></router-link>
 	// 					</li>
 	// 				</ul>
 	// 			</div>
@@ -12748,7 +12818,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-index-ui {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: vertical;\n  background: #f5f9ff;\n}\n\n.wm-index-ui > div {\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.wm-index-ui > div:nth-of-type(1) {\n  height: 30vh;\n  overflow: hidden;\n}\n\n.wm-index-ui > div:nth-of-type(2) {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  position: relative;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice {\n  position: absolute;\n  width: 90%;\n  top: -60px;\n  border-radius: 10px;\n  left: 5%;\n  max-height: 200px;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  background: #fff;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  -webkit-box-align: start;\n  overflow: hidden;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice > div:nth-of-type(2) {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  word-break: break-all;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice img {\n  width: 80px;\n}\n\n.wm-index-ui .wm-menu-list {\n  width: 750px;\n  height: 600px;\n  position: absolute;\n  bottom: 10px;\n}\n\n.wm-index-ui .wm-menu-list ul {\n  height: 200px;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n}\n\n.wm-index-ui .wm-menu-list ul li {\n  height: 100%;\n  box-sizing: border-box;\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  text-align: center;\n  border: 1px solid red;\n}\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-index-ui {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: vertical;\n  background: #f5f9ff;\n}\n\n.wm-index-ui > div {\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.wm-index-ui > div:nth-of-type(1) {\n  height: 30vh;\n  overflow: hidden;\n}\n\n.wm-index-ui > div:nth-of-type(2) {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  position: relative;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice {\n  position: absolute;\n  width: 90%;\n  top: -60px;\n  border-radius: 10px;\n  left: 5%;\n  max-height: 200px;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  background: #fff;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  -webkit-box-align: start;\n  overflow: hidden;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice > div:nth-of-type(2) {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  word-break: break-all;\n}\n\n.wm-index-ui > div:nth-of-type(2) .wm-index-notice img {\n  width: 80px;\n}\n\n.wm-index-ui .wm-menu-list {\n  width: 750px;\n  height: 600px;\n  position: absolute;\n  bottom: 10px;\n}\n\n.wm-index-ui .wm-menu-list ul {\n  height: 200px;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n}\n\n.wm-index-ui .wm-menu-list ul li {\n  height: 100%;\n  box-sizing: border-box;\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  text-align: center;\n  border: 1px solid red;\n  position: relative;\n}\n\n.wm-index-ui .wm-menu-list ul li a {\n  z-index: 10;\n}\n", ""]);
 
 	// exports
 
@@ -12757,7 +12827,7 @@
 /* 30 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div  class=\"wm-index-ui lt-full\">\r\n\t\t<div>\r\n\t\t\t<img :src=\"imgs.banner\" alt=\"\">\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<div class=\"wm-index-notice\">\r\n\t\t\t\t<div><img :src=\"imgs.notice\" alt=\"\"></div>\r\n\t\t\t\t<div>为推进新时代藏学研究与一带一路建设对接，经研究决定，首届丝路藏学学术研讨会将于2018年9月24至27日（24日报到）</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-menu-list\">\r\n\t\t\t\t<ul  v-for=\"(menu,i) in menus\" :key='i'>\r\n\t\t\t\t\t<li v-for=\"(m,i) in menu\" :key='i'> \r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<img :style=\"{width:m.width}\" :src=\"m.defaultImg\" alt=\"\">\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div :class=\"m.class\">{{m.name}}</div>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div  class=\"wm-index-ui lt-full\">\r\n\t\t<div>\r\n\t\t\t<img :src=\"imgs.banner\" alt=\"\">\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<div class=\"wm-index-notice\">\r\n\t\t\t\t<div><img :src=\"imgs.notice\" alt=\"\"></div>\r\n\t\t\t\t<div>为推进新时代藏学研究与一带一路建设对接，经研究决定，首届丝路藏学学术研讨会将于2018年9月24至27日（24日报到）</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-menu-list\">\r\n\t\t\t\t<ul  v-for=\"(menu,i) in menus\" :key='i'>\r\n\t\t\t\t\t<li v-for=\"(m,i) in menu\" :key='i'> \r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<img :style=\"{width:m.width}\" :src=\"m.defaultImg\" alt=\"\">\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div :class=\"m.class\">{{m.name}}</div>\r\n\t\t\t\t\t\t<router-link class='lt-full' :to='m.href+$route.params.meetid'></router-link>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 31 */
@@ -12907,6 +12977,7 @@
 			if (this.userinfo.isadmin) {
 				//window.location.hash = '/periods';
 			}
+			document.title = '个人中心';
 		},
 
 		methods: {
@@ -13147,7 +13218,7 @@
 	var __vue_script__, __vue_template__
 	__webpack_require__(37)
 	__vue_script__ = __webpack_require__(39)
-	__vue_template__ = __webpack_require__(43)
+	__vue_template__ = __webpack_require__(48)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
@@ -13220,21 +13291,25 @@
 	// 					<div class="wm-course-content">
 	// 						<h1>{{course.title}}</h1>
 	// 						<div class="wm-course-teacher">
-	// 							<div>老师：{{course.teachername}}</div>
+	// 							<div>老师：{{course.realname}}</div>
 	// 							<div>教室：{{course.classroom}}</div>
 	// 						</div>
 	// 						<div class="wm-course-time">
-	// 							时间：{{course.lessondate}}
+	// 							时间：{{course.lessonstarttime}} - {{course.lessonendtime}}
 	// 						</div>
 	// 						<div class="wm-course-action">
-	// 							<div>请假</div>
-	// 							<div>签到</div>
+	// 							<div v-tap='[toggleLeave,course,i]'>{{course.status === 2 ? '已请假':course.status === 2 ? '请假已通过':''}}</div>
+	// 							<div :class='{"wm-has-signup":course.status}' v-tap='[signup,course]'>签到</div>
+	// 						</div>
+	// 						<div class='wm-course-leave-C' v-if='course.showLeave'>
+	// 							<input v-model="course.excuse" placeholder="请输入请假理由~~" /><span v-tap='[leave,course]'>提交</span>
 	// 						</div>
 	// 					</div>
 	//
 	// 				</li>
 	// 			</ul>
 	// 		</div>
+	// 		<Toast :errorMsg='errorMsg'></Toast>
 	// 	</div>
 	// </template>
 	//
@@ -13261,6 +13336,10 @@
 
 	var _vue2 = _interopRequireDefault(_vue);
 
+	var _toastToast = __webpack_require__(43);
+
+	var _toastToast2 = _interopRequireDefault(_toastToast);
+
 	exports['default'] = {
 		props: ['obserable'],
 		name: 'zmitiindex',
@@ -13268,34 +13347,91 @@
 			return {
 				imgs: window.imgs,
 				viewH: document.documentElement.clientHeight,
-				courseList: [{
-					syllabusid: '1',
-					meetid: 1,
-					meetname: '会议',
-					title: '数学',
-					content: '课程说明 ',
-					teacherid: 1,
-					teachername: '凡老师',
-					lessondate: '2018-09-12',
-					classroom: '5号楼1209',
-					latitude: '',
-					longitude: "",
-					comment: ''
-				}]
+				lat: 0,
+				lng: 0,
+				errorMsg: "",
+				courseList: [
+					/* {
+	    	syllabusid:'1',
+	    	meetid:1,
+	    	meetname:'会议',
+	    	title:'数学',
+	    	content:'课程说明 ',
+	    	teacherid:1,
+	    	teachername:'凡老师',
+	    	lessondate:'2018-09-12',
+	    	classroom:'5号楼1209',
+	    	latitude:'',
+	    	longitude:"",
+	    	comment:'',
+	    } */
+				]
 			};
 		},
-		components: {},
+		components: {
+			Toast: _toastToast2['default']
+		},
 
 		methods: {
+
+			signup: function signup(course) {
+				var _this = this;
+
+				//签到
+				switch (course.status) {
+					case 1:
+						this.errorMsg = '您已签到';
+						break;
+					case 2:
+						this.errorMsg = '您已请假';
+						break;
+				}
+
+				setTimeout(function () {
+					_this.errorMsg = '';
+				}, 2000);
+			},
+			toggleLeave: function toggleLeave(course, index) {
+				course.showLeave = !course.showLeave;
+				this.courseList = this.courseList.concat([]);
+			},
+
+			leave: function leave(course) {
+				var _this2 = this;
+
+				if (course.status === 2 || course.status === 3) {
+					this.errorMsg = '您已请假';
+					setTimeout(function () {
+						_this2.errorMsg = '';
+					}, 2000);
+					return;
+				}
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/zmitistudent/signcourse',
+					data: {
+						syllabusid: course.syllabusid,
+						status: 2, //请假未审批
+						excuse: course.excuse,
+						latitude: s.lat,
+						longitude: s.lng
+					},
+					success: function success(data) {
+						console.log(data);
+						if (data.getret === 0) {
+							course.showLeave = false;
+						}
+					}
+				});
+			},
 
 			showCityInfo: function showCityInfo() {
 				//实例化城市查询类
 
-				return;
-
 				var map = new AMap.Map('map', {
 					resizeEnable: true
 				});
+				var s = this;
 				map.plugin('AMap.Geolocation', function () {
 					var geolocation = new AMap.Geolocation({
 						enableHighAccuracy: true, //是否使用高精度定位，默认:true
@@ -13307,7 +13443,8 @@
 					map.addControl(geolocation);
 					geolocation.getCurrentPosition();
 					AMap.event.addListener(geolocation, 'complete', function (data) {
-
+						s.lat = data.position.lat;
+						s.lng = data.position.lng;
 						console.log(data);
 					});
 					//返回定位信息
@@ -13344,21 +13481,36 @@
 			},
 			initScroll: function initScroll() {
 				this.scroll = new _iscroll2['default'](this.$refs['page'], {});
+			},
+			getCourseList: function getCourseList() {
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/zmitistudent/getcourselist',
+					data: {
+						meetid: s.$route.params.meetid
+					},
+					success: function success(data) {
+						if (data.getret === 0) {
+							console.log(data);
+
+							s.courseList = data.list;
+						}
+					}
+				});
 			}
 
 		},
 		mounted: function mounted() {
-			var _this = this;
+			var _this3 = this;
 
 			window.ss = this;
 			this.showCityInfo();
-			for (var i = 0; i <= 4; i++) {
-				this.courseList = this.courseList.concat(this.courseList);
-			}
+			this.getCourseList();
+
 			this.initScroll();
 
 			setTimeout(function () {
-				_this.scroll.refresh();
+				_this3.scroll.refresh();
 			}, 100);
 		}
 	};
@@ -13413,7 +13565,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-course-ui {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: vertical;\n  background: #f5f9ff;\n}\n\n.wm-course-ui .wm-course-list-wrap {\n  overflow: hidden;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul {\n  margin: 0 auto;\n  width: 650px;\n  padding-bottom: 50px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  -webkit-box-pack: justify;\n  -webkit-box-align: start;\n  background: #fff;\n  margin: 20px 0;\n  position: relative;\n  padding: 20px 0;\n  border-radius: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li:before {\n  content: '';\n  width: 10px;\n  height: 100%;\n  background: #f45486;\n  position: absolute;\n  left: 0;\n  top: 0;\n  border-top-left-radius: 20px;\n  border-bottom-left-radius: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li:nth-of-type(2n+1)::before {\n  background: #6d7bff;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-ico {\n  width: 80px;\n  margin: 0 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content {\n  -webkit-box-flex: 1;\n  color: #314a83;\n  margin-right: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content > h1 {\n  font-weight: normal;\n  font-size: 34px;\n  height: 80px;\n  line-height: 80px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher,\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  font-size: 26px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action {\n  -webkit-box-pack: end;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div {\n  font-size: 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div:nth-of-type(1) {\n  padding: 10px 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div:nth-of-type(2) {\n  background: #298cf0;\n  color: #fff;\n  text-align: center;\n  padding: 10px 40px;\n  border-radius: 30px;\n  margin-left: 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher {\n  -webkit-box-pack: justify;\n  margin: 10px 0;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher > div:nth-of-type(2) {\n  color: #98badd;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-time {\n  color: #98badd;\n  font-size: 24px;\n}\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-course-ui {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: vertical;\n  background: #f5f9ff;\n}\n\n.wm-course-ui .wm-course-list-wrap {\n  overflow: hidden;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul {\n  margin: 0 auto;\n  width: 650px;\n  padding-bottom: 50px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  -webkit-box-pack: justify;\n  -webkit-box-align: start;\n  background: #fff;\n  margin: 20px 0;\n  position: relative;\n  padding: 20px 0;\n  border-radius: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li:before {\n  content: '';\n  width: 10px;\n  height: 100%;\n  background: #f45486;\n  position: absolute;\n  left: 0;\n  top: 0;\n  border-top-left-radius: 20px;\n  border-bottom-left-radius: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li:nth-of-type(2n+1)::before {\n  background: #6d7bff;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-ico {\n  width: 80px;\n  margin: 0 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content {\n  -webkit-box-flex: 1;\n  color: #314a83;\n  margin-right: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content > h1 {\n  font-weight: normal;\n  font-size: 34px;\n  height: 80px;\n  line-height: 80px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher,\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  font-size: 26px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action {\n  -webkit-box-pack: end;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div {\n  font-size: 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div:nth-of-type(1) {\n  padding: 10px 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div:nth-of-type(2) {\n  background: #298cf0;\n  color: #fff;\n  text-align: center;\n  padding: 10px 40px;\n  border-radius: 30px;\n  margin-left: 30px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-action > div.wm-has-signup {\n  background: #f7f7f7;\n  color: #c5c8ce;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C {\n  border: 1px solid #ddd;\n  border-radius: 10px;\n  margin-top: 16px;\n  position: relative;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C:before {\n  content: '';\n  position: absolute;\n  width: 40px;\n  height: 40px;\n  border-radius: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  background: #fff;\n  left: 52%;\n  top: -20px;\n  border-left: 1px solid #ddd;\n  border-top: 1px solid  #ddd;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C input {\n  width: 60%;\n  border: none;\n  height: 80px;\n  font-size: 30px;\n  outline: none;\n  margin-left: 20px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-leave-C span {\n  position: absolute;\n  width: 80px;\n  height: 80px;\n  border-radius: 50%;\n  right: 0;\n  -webkit-transform: scale(0.9);\n  transform: scale(0.9);\n  background: #11d35d;\n  font-size: 24px;\n  color: #fff;\n  text-align: center;\n  line-height: 80px;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher {\n  -webkit-box-pack: justify;\n  margin: 10px 0;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-teacher > div:nth-of-type(2) {\n  color: #98badd;\n}\n\n.wm-course-ui .wm-course-list-wrap > ul li .wm-course-content .wm-course-time {\n  color: #98badd;\n  font-size: 24px;\n  line-height: 60px;\n}\n", ""]);
 
 	// exports
 
@@ -15517,12 +15669,378 @@
 
 /***/ }),
 /* 43 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = "\r\n\t<div  class=\"wm-course-ui lt-full\">\r\n\t\t<div id='map' style=\"display:none;\"></div>\r\n\r\n\t\t<div class=\"wm-course-list-wrap lt-full\" ref='page'>\r\n\t\t\t<ul>\r\n\t\t\t\t<li v-for=\"(course,i) in courseList\" :key=\"i\">\r\n\t\t\t\t\t<div class=\"wm-course-ico\">\r\n\t\t\t\t\t\t<img :src=\"imgs[i%2===0 ? 'book1':'book2']\" alt=\"\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-course-content\">\r\n\t\t\t\t\t\t<h1>{{course.title}}</h1>\r\n\t\t\t\t\t\t<div class=\"wm-course-teacher\">\r\n\t\t\t\t\t\t\t<div>老师：{{course.teachername}}</div>\r\n\t\t\t\t\t\t\t<div>教室：{{course.classroom}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-course-time\">\r\n\t\t\t\t\t\t\t时间：{{course.lessondate}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-course-action\">\r\n\t\t\t\t\t\t\t<div>请假</div>\r\n\t\t\t\t\t\t\t<div>签到</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t</div>\r\n";
+	var __vue_script__, __vue_template__
+	__webpack_require__(44)
+	__vue_script__ = __webpack_require__(46)
+	__vue_template__ = __webpack_require__(47)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), true)
+	  if (!hotAPI.compatible) return
+	  var id = "F:\\xuchang2018\\project\\meetingstudent\\components\\toast\\toast.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
 
 /***/ }),
 /* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(45);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-71d53468&file=toast.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./toast.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-71d53468&file=toast.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./toast.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\r\n\t.zmiti-toast-main-ui{\r\n\t\tposition: fixed;\r\n\t\tbackground: rgba(0,0,0,.5);\r\n\t\tcolor:#fff;\r\n\t\tborder-radius: .3rem;\r\n\t\tpadding:.8rem 1.5rem;\r\n\t\tleft: 50%;\r\n\t\tz-index: 111111;\r\n\t\ttop: 50%;\r\n\t\tfont-size:26px;\r\n\t\t-webkit-transform:translate3d(-50%,-50%,0);\r\n\t\t-webkit-transition:1s;\r\n\t}\r\n\t.zmiti-toast-main-ui.hide{\r\n\t\tdisplay: none;\r\n\t}\r\n\t.zmiti-toast-main-ui .success{\r\n\t\tdisplay: inline-block;\r\n\t\twidth: 34px;\r\n\t\theight: 34px;\r\n\t\tvertical-align: middle;\r\n\t\tmargin-right: 10px;\r\n\t\tborder-radius: 50%;\r\n\t\tbackground:#00ff12;\r\n\t\tposition: relative;\r\n\t\t\r\n\t}\r\n\t.zmiti-toast-main-ui .success:before{\r\n\t\tcontent:\"\";\r\n\t\tposition: absolute;\r\n\t\twidth:10px;\r\n\t\theight: 18px;\r\n\t\tborder:4px solid #fff;\r\n\t\t-webkit-transform:rotate(45deg);\r\n\t\tborder-top: none;\r\n\t\tborder-left: none;\r\n\t\tleft: 10px;\r\n\t\ttop: 4px;\r\n\t}\r\n\r\n\r\n\t.zmiti-toast-main-ui .error{\r\n\t\tdisplay: inline-block;\r\n\t\twidth: 34px;\r\n\t\theight: 34px;\r\n\t\tvertical-align: middle;\r\n\t\tmargin-right: 10px;\r\n\t\tborder-radius: 50%;\r\n\t\tbackground:#f00;\r\n\t\tposition: relative;\r\n\t\t\r\n\t}\r\n\t.zmiti-toast-main-ui .error:before{\r\n\t\tcontent:\"\";\r\n\t\tposition: absolute;\r\n\t\twidth:1px;\r\n\t\theight: 18px;\r\n\t\tborder:4px solid #fff;\r\n\t\t-webkit-transform: translateX(4px) rotate(45deg);\r\n\t\tborder-top: none;\r\n\t\tborder-left: none;\r\n\t\tleft: 10px;\r\n\t\ttop: 4px;\r\n\t}.zmiti-toast-main-ui .error:after{\r\n\t\tcontent:\"\";\r\n\t\tposition: absolute;\r\n\t\twidth:1px;\r\n\t\theight: 18px;\r\n\t\tborder:4px solid #fff;\r\n\t\t-webkit-transform:translateX(4px) rotate(-45deg);\r\n\t\tborder-top: none;\r\n\t\tborder-left: none;\r\n\t\tleft: 10px;\r\n\t\ttop: 4px;\r\n\t}\r\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports) {
+
+	// <template>
+	// 	<div class="zmiti-toast-main-ui" :class='{"hide":!msg && !errorMsg}'>
+	// 		<span :class="{'success':msg,'error':errorMsg}"></span>{{msg||errorMsg}}
+	// 	</div>
+	// </template>
+	// <script>
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+	exports['default'] = {
+		props: ['msg', 'errorMsg'],
+		data: function data() {
+			return {};
+		},
+		mounted: function mounted() {}
+	};
+
+	// </script>
+	// <style>
+	// 	.zmiti-toast-main-ui{
+	// 		position: fixed;
+	// 		background: rgba(0,0,0,.5);
+	// 		color:#fff;
+	// 		border-radius: .3rem;
+	// 		padding:.8rem 1.5rem;
+	// 		left: 50%;
+	// 		z-index: 111111;
+	// 		top: 50%;
+	// 		font-size:26px;
+	// 		-webkit-transform:translate3d(-50%,-50%,0);
+	// 		-webkit-transition:1s;
+	// 	}
+	// 	.zmiti-toast-main-ui.hide{
+	// 		display: none;
+	// 	}
+	// 	.zmiti-toast-main-ui .success{
+	// 		display: inline-block;
+	// 		width: 34px;
+	// 		height: 34px;
+	// 		vertical-align: middle;
+	// 		margin-right: 10px;
+	// 		border-radius: 50%;
+	// 		background:#00ff12;
+	// 		position: relative;
+	//
+	// 	}
+	// 	.zmiti-toast-main-ui .success:before{
+	// 		content:"";
+	// 		position: absolute;
+	// 		width:10px;
+	// 		height: 18px;
+	// 		border:4px solid #fff;
+	// 		-webkit-transform:rotate(45deg);
+	// 		border-top: none;
+	// 		border-left: none;
+	// 		left: 10px;
+	// 		top: 4px;
+	// 	}
+	//
+	//
+	// 	.zmiti-toast-main-ui .error{
+	// 		display: inline-block;
+	// 		width: 34px;
+	// 		height: 34px;
+	// 		vertical-align: middle;
+	// 		margin-right: 10px;
+	// 		border-radius: 50%;
+	// 		background:#f00;
+	// 		position: relative;
+	//
+	// 	}
+	// 	.zmiti-toast-main-ui .error:before{
+	// 		content:"";
+	// 		position: absolute;
+	// 		width:1px;
+	// 		height: 18px;
+	// 		border:4px solid #fff;
+	// 		-webkit-transform: translateX(4px) rotate(45deg);
+	// 		border-top: none;
+	// 		border-left: none;
+	// 		left: 10px;
+	// 		top: 4px;
+	// 	}.zmiti-toast-main-ui .error:after{
+	// 		content:"";
+	// 		position: absolute;
+	// 		width:1px;
+	// 		height: 18px;
+	// 		border:4px solid #fff;
+	// 		-webkit-transform:translateX(4px) rotate(-45deg);
+	// 		border-top: none;
+	// 		border-left: none;
+	// 		left: 10px;
+	// 		top: 4px;
+	// 	}
+	// </style>
+	module.exports = exports['default'];
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div class=\"zmiti-toast-main-ui\" :class='{\"hide\":!msg && !errorMsg}'>\r\n\t\t<span :class=\"{'success':msg,'error':errorMsg}\"></span>{{msg||errorMsg}}\r\n\t</div>\r\n";
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div  class=\"wm-course-ui lt-full\">\r\n\t\t<div id='map' style=\"display:none;\"></div>\r\n\r\n\t\t<div class=\"wm-course-list-wrap lt-full\" ref='page'>\r\n\t\t\t<ul>\r\n\t\t\t\t<li v-for=\"(course,i) in courseList\" :key=\"i\">\r\n\t\t\t\t\t<div class=\"wm-course-ico\">\r\n\t\t\t\t\t\t<img :src=\"imgs[i%2===0 ? 'book1':'book2']\" alt=\"\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-course-content\">\r\n\t\t\t\t\t\t<h1>{{course.title}}</h1>\r\n\t\t\t\t\t\t<div class=\"wm-course-teacher\">\r\n\t\t\t\t\t\t\t<div>老师：{{course.realname}}</div>\r\n\t\t\t\t\t\t\t<div>教室：{{course.classroom}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-course-time\">\r\n\t\t\t\t\t\t\t时间：{{course.lessonstarttime}} - {{course.lessonendtime}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-course-action\">\r\n\t\t\t\t\t\t\t<div v-tap='[toggleLeave,course,i]'>{{course.status === 2 ? '已请假':course.status === 2 ? '请假已通过':''}}</div>\r\n\t\t\t\t\t\t\t<div :class='{\"wm-has-signup\":course.status}' v-tap='[signup,course]'>签到</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-course-leave-C' v-if='course.showLeave'>\r\n\t\t\t\t\t\t\t<input v-model=\"course.excuse\" placeholder=\"请输入请假理由~~\" /><span v-tap='[leave,course]'>提交</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t<Toast :errorMsg='errorMsg'></Toast>\r\n\t</div>\r\n";
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__vue_script__ = __webpack_require__(50)
+	__vue_template__ = __webpack_require__(53)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), true)
+	  if (!hotAPI.compatible) return
+	  var id = "F:\\xuchang2018\\project\\meetingstudent\\components\\meetlist\\index.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// <template>
+	// 	<div class="wm-meetlist-ui lt-full">
+	// 		<div class="wm-meetlist-wrap" ref='page' :style="{height:viewH+'px'}">
+	// 			<ul>
+	// 				<li class="wm-meetlist-item" v-for='(meet,i) in meetList' :key="i">
+	// 					<div>{{meet.meetname}}</div>
+	// 					<div class="zmiti-text-overflow"> <span></span> </div>
+	// 					<router-link :to='"/index/"+meet.meetid'></router-link>
+	// 				</li>
+	// 				<li style="height:60px;background:#f5f9ff"></li>
+	// 			</ul>
+	// 		</div>
+	// 	</div>
+	// </template>
+	//
+	// <script>
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	__webpack_require__(51);
+
+	var _libVerification = __webpack_require__(15);
+
+	var _libVerification2 = _interopRequireDefault(_libVerification);
+
+	var _libUtil = __webpack_require__(14);
+
+	var _libUtil2 = _interopRequireDefault(_libUtil);
+
+	var _iscroll = __webpack_require__(42);
+
+	var _iscroll2 = _interopRequireDefault(_iscroll);
+
+	document.title = '会议列表';
+	exports['default'] = {
+		props: ['obserable'],
+		name: 'zmitiindex',
+		data: function data() {
+			return {
+				visible: false,
+				imgs: window.imgs,
+				showPassWord: false,
+				isLoading: false,
+				userError: "",
+				companyError: "",
+				viewH: window.innerHeight,
+				usernameError: "",
+				passError: "",
+				repassError: "",
+				mobileError: "",
+
+				meetList: [],
+
+				formUser: {
+					studentmame: '',
+					nickname: '',
+					mobile: '',
+					telphone: '',
+					email: '',
+					sex: '',
+					companyname: '',
+					job: '',
+					cityids: [],
+					detailaddress: []
+				},
+				userinfo: {}
+			};
+		},
+		components: {},
+
+		beforeCreate: function beforeCreate() {
+			var validate = _libVerification2['default'].validate(this);
+			//symbinUtil.clearCookie('login');
+
+			this.validate = validate;
+		},
+		mounted: function mounted() {
+			this.userinfo = _libUtil2['default'].getUserInfo();
+			if (this.userinfo.isadmin) {
+				//window.location.hash = '/periods';
+			}
+			this.scorll = new _iscroll2['default'](this.$refs['page'], {
+				preventDefault: false
+
+			});
+			this.getMeetList();
+		},
+
+		methods: {
+
+			getMeetList: function getMeetList() {
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/zmitistudent/getmeetlist',
+					data: {},
+					success: function success(data) {
+						console.log(data);
+						if (data.getret === 0) {
+							s.meetList = data.list;
+							for (var i = 0; i < 5; i++) {
+								//	s.meetList = s.meetList.concat(s.meetList);
+							}
+							setTimeout(function () {
+								s.scorll.refresh();
+							}, 100);
+						}
+					}
+				});
+			}
+
+		}
+	};
+
+	// </script>
+	//
+	module.exports = exports['default'];
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(52);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-meetlist-ui {\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: vertical;\n  background: #f5f9ff;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  width: 100%;\n  overflow: hidden;\n  box-sizing: border-box;\n  z-index: 10;\n  position: relative;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap > ul {\n  background: #fff;\n  width: 90%;\n  margin: 0 auto;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap .wm-meetlist-item {\n  margin: 20px auto 0;\n  padding: 26px;\n  border-radius: 10px;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n  -webkit-box-pack: justify;\n  border-bottom: 2px solid #f5f9ff;\n  position: relative;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap .wm-meetlist-item a {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  font-size: 50px;\n  text-align: center;\n  line-height: 60px;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap .wm-meetlist-item > div {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  color: #555;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap .wm-meetlist-item > div:nth-of-type(2) {\n  -webkit-box-flex: 1;\n  box-flex: 1;\n  text-align: right;\n  color: #98badd;\n  position: relative;\n}\n\n.wm-meetlist-ui .wm-meetlist-wrap .wm-meetlist-item > div:nth-of-type(2) span {\n  width: 24px;\n  height: 24px;\n  display: inline-block;\n  border: 4px solid #bfd0e6;\n  position: relative;\n  top: 3px;\n  margin: 0 5px;\n  -webkit-transform: rotate(45deg) scale(0.8);\n  transform: rotate(45deg) scale(0.8);\n  border-left: none;\n  border-bottom: none;\n}\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div class=\"wm-meetlist-ui lt-full\">\r\n\t\t<div class=\"wm-meetlist-wrap\" ref='page' :style=\"{height:viewH+'px'}\">\r\n\t\t\t<ul>\r\n\t\t\t\t<li class=\"wm-meetlist-item\" v-for='(meet,i) in meetList' :key=\"i\">\r\n\t\t\t\t\t<div>{{meet.meetname}}</div>\r\n\t\t\t\t\t<div class=\"zmiti-text-overflow\"> <span></span> </div>\r\n\t\t\t\t\t<router-link :to='\"/index/\"+meet.meetid'></router-link>\r\n\t\t\t\t</li>\r\n\t\t\t\t<li style=\"height:60px;background:#f5f9ff\"></li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t</div>\r\n";
+
+/***/ }),
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -18154,13 +18672,13 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 45 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(46);
+	var content = __webpack_require__(56);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -18180,7 +18698,7 @@
 	}
 
 /***/ }),
-/* 46 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(9)();
@@ -18194,7 +18712,7 @@
 
 
 /***/ }),
-/* 47 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
