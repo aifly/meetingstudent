@@ -1,6 +1,6 @@
 <template>
-	<div class="wm-meetlist-ui lt-full">
-		<List :list='meetList' to='/index/' name:'meetname' id='meetid'></List>
+	<div class="wm-newslist-ui lt-full">
+		<List :list='newsList' to='/news/' name='title' id='newsid'></List>
 	</div>
 </template>
 
@@ -11,7 +11,7 @@
 	import Vue from 'vue';
 	import List from '../list/index';
 	import IScroll from 'iscroll';
-	document.title = '会议列表';
+	document.title = '新闻列表';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -29,7 +29,7 @@
 				repassError:"",
 				mobileError:"",
 
-				meetList:[
+				newsList:[
 					 
 				],
 				
@@ -67,28 +67,28 @@
 				//window.location.hash = '/periods';
 			}
 			
-			this.getMeetList();
+			this.getNewsList();
 		},
 		
 		methods:{
 
 			getMeet(index){
-				Vue.obserable.on('getMeetInfo',()=>{
+				/*Vue.obserable.on('getMeetInfo',()=>{
 					return this.meetList[index];
 				});
 				window.localStorage.setItem('meetinfo',JSON.stringify(this.meetList[index]));
-				this.$router.push({path:'/index/'+this.meetList[index].meetid})
+				this.$router.push({path:'/index/'+this.meetList[index].meetid})*/
 			},
 
-			getMeetList(){
+			getNewsList(){
 				var s = this;
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/zmitistudent/getmeetlist',
-					data:{},
+					url:window.config.baseUrl+'/zmitistudent/getnewslist',
+					data:{meetid:s.$route.params.meetid},
 					success(data){
 						console.log(data);
 						if(data.getret === 0){
-							s.meetList = data.list;
+							s.newsList = data.list;
 							for(var i = 0 ;i<5;i++){
 							//	s.meetList = s.meetList.concat(s.meetList);
 							}

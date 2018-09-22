@@ -4,11 +4,10 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
-.wm-meetlist-ui {
+.wm-newslist-ui {
     @include displayBox(vertical);
 
     background: #f5f9ff;
-
-    
+ 
    
 }

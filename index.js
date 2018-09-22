@@ -6,6 +6,8 @@ import Index from './components/index/index';
 import User from './components/user/index';
 import Course from './components/course/index';
 import MeetList from './components/meetlist/index';
+import NewsList from './components/newslist/index';
+import News from './components/news/index';
 //import Collection from './components/collection/index';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
@@ -46,6 +48,16 @@ const router = new VueRouter({
 			path: '/meetlist/',
 			name: 'meetlist',
 			component: MeetList,
+			props:true
+		},{
+			path: '/newslist/:meetid/',
+			name: 'newslist',
+			component: NewsList,
+			props:true
+		},{
+			path: '/news/:newsid/',
+			name: 'news',
+			component: News,
 			props:true
 		}, {
 			path: '/user/:meetid?/',
