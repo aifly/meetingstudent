@@ -6,7 +6,7 @@
 				<span>{{newsInfo.updatetime}} - </span>
 				<span>浏览：{{newsInfo.visits}}</span>
 			</div>
-			<div v-html='newsInfo.content'></div>
+			<div class="wm-news-content" v-html='newsInfo.content'></div>
 
 			<div  v-if='newsInfo.encryptfile' class="wm-encryptfile-item" >
 				<canvas ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(",")'></canvas>

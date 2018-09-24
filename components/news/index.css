@@ -45,5 +45,8 @@
   color: #19365d; }
   .wm-news-ui .wm-news-time {
     margin: 60px 0; }
+  .wm-news-ui .wm-news-content {
+    width: 710px;
+    text-indent: 2em; }
 
 /*# sourceMappingURL=index.css.map */
