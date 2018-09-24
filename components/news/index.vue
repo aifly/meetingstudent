@@ -110,7 +110,7 @@
 							s.scroll.refresh();
 
 						}
-						img.src = 'http://api.symbin.cn/'+fileList[i];
+						img.src = fileList[i];
 
 					})
 				}
@@ -146,7 +146,7 @@
 									s.height = this.height/ this.width * s.width;
 
 								}
-								img.src ='http://api.symbin.cn/' + fileList[0];
+								img.src = fileList[0];
 							}
 
 							 
