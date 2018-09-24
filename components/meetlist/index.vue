@@ -1,6 +1,6 @@
 <template>
 	<div class="wm-meetlist-ui lt-full">
-		<List :list='meetList' to='/index/' name:'meetname' id='meetid'></List>
+		<List :list='meetList' to='/index/' name='meetname' id='meetid'></List>
 	</div>
 </template>
 

@@ -4,10 +4,19 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
-.wm-newslist-ui {
-    @include displayBox(vertical);
-
+.wm-news-ui {
     background: #f5f9ff;
- 
-   
+	padding:40px 20px;  
+	color:#19365d;
+	.wm-news-title{
+
+	} 
+	.wm-news-time{
+		margin: 60px 0;
+	}
+
+	.wm-encryptfile-item{
+		canvas{
+		}
+	}
 }
