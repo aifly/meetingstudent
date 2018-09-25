@@ -77,22 +77,27 @@ router.beforeEach((to,from,next)=>{//导航守卫。
 		next();
 		return;
 	}
-	symbinUtil.ajax({
-		url: window.config.baseUrl +'/zmitistudent/judgelogin',
-		data:{
-			userid: userinfo.userid,
-			accesstoken: userinfo.accesstoken
-		},
-		error(){
-			next();
-		},
-		success(data){
-			if(data.getret !== 0){
-				router.push({name:'login'});
+	if (userinfo && userinfo.userid){
+
+		symbinUtil.ajax({
+			url: window.config.baseUrl +'/zmitistudent/judgelogin',
+			data:{
+				userid: userinfo.userid,
+				accesstoken: userinfo.accesstoken
+			},
+			error(){
+				next();
+			},
+			success(data){
+				if(data.getret !== 0){
+					router.push({name:'login'});
+				}
+				next();
 			}
-			next();
-		}
-	})
+		})
+	}else{
+		next();
+	}
 })
 
 new Vue({

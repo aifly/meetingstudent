@@ -9,7 +9,7 @@
 			<div class="wm-news-content" v-html='newsInfo.content'></div>
 
 			<div  v-if='newsInfo.encryptfile' class="wm-encryptfile-item" >
-				<canvas ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(",")'></canvas>
+				<canvas :key='i' ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(",")'></canvas>
 			</div>
 		</div>
 	</div>
@@ -66,18 +66,16 @@
 		},
 
 		beforeCreate(){
-			var validate = sysbinVerification.validate(this);
+			/* var validate = sysbinVerification.validate(this);
 			//symbinUtil.clearCookie('login');
 
-			this.validate = validate;
+			this.validate = validate; */
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-			if(this.userinfo.isadmin){
-				//window.location.hash = '/periods';
-			}
 			
-			this.getNewsList();
+			
+			this.getNewsById();
 			this.scroll = new IScroll(this.$refs['page'],{
 				scrollbars:true
 			});
@@ -88,6 +86,9 @@
 				if(val>0){
 					var canvases = this.$refs['canvas'];
 					var s = this;
+					if(!this.userinfo){
+						return;
+					}
 					var name = this.userinfo.studentname;
 					var fileList = this.newsInfo.encryptfile.split(',');
 					canvases.forEach((canvas,i)=>{
@@ -127,8 +128,9 @@
 				this.$router.push({path:'/index/'+this.meetList[index].meetid})*/
 			},
 
-			getNewsList(){
+			getNewsById(){
 				var s = this;
+				
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/zmitistudent/getnewsinfo',
 					data:{
@@ -136,6 +138,7 @@
 					},
 					success(data){
 						console.log(data);
+
 						if(data.getret === 0){
 							s.newsInfo = data.list;
 							if(s.newsInfo.encryptfile){
