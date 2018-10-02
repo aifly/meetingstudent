@@ -33,6 +33,8 @@
 
 	import Vue from "vue";
 
+	
+
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -186,10 +188,13 @@
 		mounted(){
 			/* this.checkCache();
 			this.getCityData(); */
+
 			this.meeting = Vue.obserable.trigger({
 				type:'getMeetInfo'
 			}) || JSON.parse(window.localStorage.getItem('meetinfo'));
-
+			setTimeout(() => {
+				document.title = '首页';
+			}, 100);
 			console.log(this.meeting);
 
 			

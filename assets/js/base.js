@@ -17,6 +17,13 @@ var imgs = {
 	logout:'./assets/images/logout.png',
 	file:'./assets/images/file.png',
 	user:'./assets/images/user.png',
+	encryption:'./assets/images/encryption.png',
+	zip:'./assets/images/zip.png',
+	rar:'./assets/images/zip.png',
+	docx:'./assets/images/word.png',
+	doc:'./assets/images/word.png',
+	pdf:'./assets/images/pdf.png',
+	link:'./assets/images/link.png',
 
 	baodao:'./assets/images/signin-ico.png',
 	course:'./assets/images/course-ico.png',

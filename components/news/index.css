@@ -8,14 +8,16 @@
   height: 100%;
   position: absolute;
   left: 0;
-  top: 0; }
+  top: 0;
+}
 
 .zmiti-text-overflow {
   overflow: hidden;
   white-space: nowrap;
   word-break: break-all;
   text-overflow: ellipsis;
-  -webkit-text-overflow: ellipsis; }
+  -webkit-text-overflow: ellipsis;
+}
 
 .zmiti-play {
   width: .8rem;
@@ -24,29 +26,89 @@
   position: fixed;
   z-index: 1000;
   right: .5rem;
-  top: .5rem; }
-  .zmiti-play.rotate {
-    -webkit-animation: rotate 5s linear infinite;
-    animation: rotate 5s linear infinite; }
+  top: .5rem;
+}
+
+.zmiti-play.rotate {
+  -webkit-animation: rotate 5s linear infinite;
+  animation: rotate 5s linear infinite;
+}
 
 .symbin-left {
-  float: left !important; }
+  float: left !important;
+}
 
 .symbin-right {
-  float: right !important; }
+  float: right !important;
+}
 
 @-webkit-keyframes rotate {
   to {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg); } }
+    transform: rotate(360deg);
+  }
+}
+
 .wm-news-ui {
   background: #f5f9ff;
   padding: 40px 20px;
-  color: #19365d; }
-  .wm-news-ui .wm-news-time {
-    margin: 60px 0; }
-  .wm-news-ui .wm-news-content {
-    width: 710px;
-    text-indent: 2em; }
+  color: #19365d;
+  box-sizing: border-box;
+}
 
-/*# sourceMappingURL=index.css.map */
+.wm-news-ui .wm-news-encryption {
+  position: absolute;
+  right: 40px;
+}
+
+.wm-news-ui .wm-news-encryption img {
+  width: 30px;
+}
+
+.wm-news-ui .wm-news-time {
+  margin: 60px 0;
+}
+
+.wm-news-ui .wm-news-content {
+  width: 710px;
+  text-indent: 2em;
+}
+
+.wm-news-ui .wm-encryptfile-item > div {
+  color: #f45486;
+  border: 3px dotted #f45486;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+  border-radius: 10px;
+  margin: 20px auto;
+}
+
+.wm-news-ui .wm-news-download-link img {
+  width: 60px;
+}
+
+.wm-news-ui .wm-news-download {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: start;
+}
+
+.wm-news-ui .wm-news-download > div {
+  margin: 20px 0;
+}
+
+.wm-news-ui .wm-news-download > div:nth-of-type(1) {
+  width: 70px;
+  margin-left: 60px;
+}
+
+.wm-news-ui .wm-news-download > div a {
+  color: inherit;
+}
+
+.wm-news-ui .wm-news-download img {
+  width: 60px;
+}

@@ -5,12 +5,24 @@
 			<div class="wm-news-time">
 				<span>{{newsInfo.updatetime}} - </span>
 				<span>浏览：{{newsInfo.visits}}</span>
+				<span class='wm-news-encryption' v-if="newsInfo.encrypsign"><img :src="imgs.encryption" alt=""></span>
 			</div>
 			<div class="wm-news-content" v-html='newsInfo.content'></div>
-
+			
 			<div  v-if='newsInfo.encryptfile' class="wm-encryptfile-item" >
+				<div>以下为保密内容，请勿外传~~</div>
 				<canvas :key='i' ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(",")'></canvas>
 			</div>
+			<div class='wm-news-download-C' v-if='newsInfo.download'>
+				<div class='wm-news-download-link'>
+					<img :src="imgs.link" alt=""> 附件
+				</div>
+				<div v-for='(file,i) in newsInfo.download.split(",")' :key="i" class='wm-news-download'>
+					<div><a :href="file"><img :src="imgs[file.split('.').pop()]" alt=""></a></div>
+					<div><a :href="file">{{file.split('/').pop()}}</a></div>
+				</div>
+			</div>
+			<h3 style="height:100px"></h3>
 		</div>
 	</div>
 </template>
@@ -40,10 +52,7 @@
 				passError:"",
 				repassError:"",
 				mobileError:"",
-
 				newsInfo:{},
-				
-
 				formUser:{
 					studentmame:'',
 					nickname:'',
@@ -77,7 +86,9 @@
 			
 			this.getNewsById();
 			this.scroll = new IScroll(this.$refs['page'],{
-				scrollbars:true
+				scrollbars:true,
+				preventDefault:false
+				
 			});
 		},
 
@@ -86,10 +97,10 @@
 				if(val>0){
 					var canvases = this.$refs['canvas'];
 					var s = this;
-					if(!this.userinfo){
-						return;
-					}
-					var name = this.userinfo.studentname;
+					
+					//var name = this.userinfo?this.userinfo.studentname:s.newsInfo.studentname;
+					var name = s.newsInfo.studentname?s.newsInfo.studentname:s.userinfo?s.userinfo.studentname:'';
+					
 					var fileList = this.newsInfo.encryptfile.split(',');
 					canvases.forEach((canvas,i)=>{
 						var context = canvas.getContext('2d');
@@ -102,9 +113,11 @@
 							context.translate(s.width/2,s.height/2);
 							context.rotate(-20*Math.PI/180);
 							context.globalAlpha=0.2;
-							context.fillText(name,0,0);
-							context.fillText(name,-(s.width)/4,-s.height/3);
-							context.fillText(name,(s.width)/20,s.height/3);
+							if(name){
+								context.fillText(name,0,0);
+								context.fillText(name,-(s.width)/4,-s.height/3);
+								context.fillText(name,(s.width)/20,s.height/3);
+							}
 
 							context.restore();
 
@@ -130,12 +143,17 @@
 
 			getNewsById(){
 				var s = this;
+				var p = {
+					newsid:s.$route.params.newsid
+				}
 				
+				if(s.$route.params.token ){
+					p.userid = s.$route.params.token.split('-')[0];
+					p.accesstoken = s.$route.params.token.split('-')[1];
+				} 
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/zmitistudent/getnewsinfo',
-					data:{
-						newsid:s.$route.params.newsid
-					},
+					data:p,
 					success(data){
 						console.log(data);
 

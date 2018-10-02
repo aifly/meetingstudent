@@ -18,7 +18,7 @@
 							时间：{{course.lessonstarttime}} - {{course.lessonendtime}}
 						</div>
 						<div class="wm-course-action">
-							<div v-tap='[toggleLeave,course,i]'>{{course.status === 2 ? '已请假':course.status === 2 ? '请假已通过':''}}</div>
+							<div v-tap='[toggleLeave,course,i]'>{{course.status === 2 ? '已请假':course.status === 2 ? '请假已通过':'请假'}}</div>
 							<div :class='{"wm-has-signup":course.status}' v-tap='[signup,course]'>签到</div>
 						</div>
 						<div class='wm-course-leave-C' v-if='course.showLeave'>
@@ -83,6 +83,25 @@
 					this.errorMsg = '您已请假';
 					break;
 				}
+
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/zmitistudent/signcourse',
+					data:{
+						syllabusid:course.syllabusid,
+						meetid:s.$route.params.meetid,
+						status:1,//正常签到
+						latitude:s.lat,
+						longitude:s.lng
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							course.showLeave = false;
+							s.getCourseList();
+						}
+					}
+				})
 
 				setTimeout(() => {
 					this.errorMsg = '';

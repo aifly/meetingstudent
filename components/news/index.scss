@@ -8,9 +8,17 @@ $color: #be0000;
     background: #f5f9ff;
 	padding:40px 20px;  
 	color:#19365d;
+	box-sizing: border-box;
 	.wm-news-title{
-
 	} 
+	.wm-news-encryption{
+		@include pos(a);
+		right: 40px;
+		img{
+			width: 30px;
+
+		}
+	}
 	.wm-news-time{
 		margin: 60px 0;
 	}
@@ -21,7 +29,40 @@ $color: #be0000;
 	}
 
 	.wm-encryptfile-item{
-		canvas{
+		&>div{
+			color:#f45486;
+			border:3px dotted #f45486;
+			height: 80px;
+			line-height: 80px;
+			text-align: center;
+			@include br(10px);
+			margin: 20px auto;
+
+			
+		}
+	}
+
+	.wm-news-download-link{
+		img{
+			width: 60px;
+		}
+
+
+	}
+
+	.wm-news-download{
+		@include displayBox(horizontal);
+		-webkit-box-pack: start;
+		&>div{
+			margin: 20px 0;
+			&:nth-of-type(1){
+				width: 70px;
+				margin-left: 60px;
+			}
+			a{color:inherit;}
+		}
+		img{
+			width: 60px;
 		}
 	}
 }

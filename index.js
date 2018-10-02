@@ -55,7 +55,7 @@ const router = new VueRouter({
 			component: NewsList,
 			props:true
 		},{
-			path: '/news/:newsid/',
+			path: '/news/:newsid/:token?/',
 			name: 'news',
 			component: News,
 			props:true
