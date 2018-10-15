@@ -3,7 +3,7 @@
 		<div>
 			<h2 class="wm-news-title">{{newsInfo.title}}</h2>
 			<div class="wm-news-time">
-				<span>{{newsInfo.updatetime}} - </span>
+				<span>{{newsInfo.createtime}} - </span>
 				<span>浏览：{{newsInfo.visits}}</span>
 				<span class='wm-news-encryption' v-if="newsInfo.encrypsign"><img :src="imgs.encryption" alt=""></span>
 			</div>
@@ -159,6 +159,10 @@
 
 						if(data.getret === 0){
 							s.newsInfo = data.list;
+							s.scroll.refresh();
+							setTimeout(() => {
+								s.scroll.refresh();
+							}, 1000);
 							if(s.newsInfo.encryptfile){
 
 								var fileList = s.newsInfo.encryptfile.split(',');

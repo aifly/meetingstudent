@@ -65,13 +65,17 @@
   width: 30px;
 }
 
+.wm-news-ui img {
+  width: 100%;
+  height: auto;
+}
+
 .wm-news-ui .wm-news-time {
   margin: 60px 0;
 }
 
 .wm-news-ui .wm-news-content {
   width: 710px;
-  text-indent: 2em;
 }
 
 .wm-news-ui .wm-encryptfile-item > div {
