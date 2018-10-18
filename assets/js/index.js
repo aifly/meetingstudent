@@ -16537,6 +16537,7 @@
 			this.userinfo = _libUtil2['default'].getUserInfo();
 
 			this.getNewsById();
+			this.addNewsViewTime();
 			this.scroll = new _iscroll2['default'](this.$refs['page'], {
 				scrollbars: true,
 				preventDefault: false
@@ -16589,6 +16590,29 @@
 	   });
 	   window.localStorage.setItem('meetinfo',JSON.stringify(this.meetList[index]));
 	   this.$router.push({path:'/index/'+this.meetList[index].meetid})*/
+			},
+
+			addNewsViewTime: function addNewsViewTime() {
+				var s = this;
+				var s = this;
+				var p = {
+					newsid: s.$route.params.newsid
+				};
+
+				if (s.$route.params.token) {
+					p.userid = s.$route.params.token.split('-')[0];
+					p.accesstoken = s.$route.params.token.split('-')[1];
+				}
+
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/zmitistudent/checkmessage',
+					data: p,
+					success: function success(data) {
+						console.log(data);
+
+						if (data.getret === 0) {}
+					}
+				});
 			},
 
 			getNewsById: function getNewsById() {
