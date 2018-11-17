@@ -17,7 +17,7 @@
 				<div class='wm-news-download-link'>
 					<img :src="imgs.link" alt=""> 附件
 				</div>
-				<div v-for='(file,i) in newsInfo.download.split(",")' :key="i" class='wm-news-download'>
+				<div v-for='(file,i) in newsInfo.download.split(",")' :key="i" class='wm-news-download' v-tap='[download,file]'>
 					<div><a :href="file"><img :src="imgs[file.split('.').pop()]" alt=""></a></div>
 					<div><a :href="file">{{file.split('/').pop()}}</a></div>
 				</div>
@@ -67,7 +67,8 @@
 
 					]
 				},
-				userinfo:{}
+				userinfo:{},
+				isXcx:false
 			}
 		},
 		components:{
@@ -91,6 +92,20 @@
 				preventDefault:false
 				
 			});
+
+
+			// web-view下的页面内
+			var s = this;
+			function ready() {
+				s.isXcx = window.__wxjs_environment === 'miniprogram';
+			};
+			if (!window.WeixinJSBridge || !WeixinJSBridge.invoke) {
+				s.isXcx = false;
+				document.addEventListener('WeixinJSBridgeReady', ready, false)
+			} else {
+				ready()
+			}
+
 		},
 
 		watch:{
@@ -133,6 +148,12 @@
 		},
 		
 		methods:{
+
+			download(file){
+				if(this.isXcx){
+					wx.miniProgram.postMessage({ data: {file} });
+				}
+			},
 
 			getMeet(index){
 				/*Vue.obserable.on('getMeetInfo',()=>{

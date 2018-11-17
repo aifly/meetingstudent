@@ -16454,7 +16454,7 @@
 	// 				<div class='wm-news-download-link'>
 	// 					<img :src="imgs.link" alt=""> 附件
 	// 				</div>
-	// 				<div v-for='(file,i) in newsInfo.download.split(",")' :key="i" class='wm-news-download'>
+	// 				<div v-for='(file,i) in newsInfo.download.split(",")' :key="i" class='wm-news-download' v-tap='[download,file]'>
 	// 					<div><a :href="file"><img :src="imgs[file.split('.').pop()]" alt=""></a></div>
 	// 					<div><a :href="file">{{file.split('/').pop()}}</a></div>
 	// 				</div>
@@ -16523,7 +16523,8 @@
 					cityids: [],
 					detailaddress: []
 				},
-				userinfo: {}
+				userinfo: {},
+				isXcx: false
 			};
 		},
 		components: {},
@@ -16543,6 +16544,18 @@
 				preventDefault: false
 
 			});
+
+			// web-view下的页面内
+			var s = this;
+			function ready() {
+				s.isXcx = window.__wxjs_environment === 'miniprogram';
+			};
+			if (!window.WeixinJSBridge || !WeixinJSBridge.invoke) {
+				s.isXcx = false;
+				document.addEventListener('WeixinJSBridgeReady', ready, false);
+			} else {
+				ready();
+			}
 		},
 
 		watch: {
@@ -16583,6 +16596,12 @@
 		},
 
 		methods: {
+
+			download: function download(file) {
+				if (this.isXcx) {
+					wx.miniProgram.postMessage({ data: { file: file } });
+				}
+			},
 
 			getMeet: function getMeet(index) {
 				/*Vue.obserable.on('getMeetInfo',()=>{
@@ -16702,7 +16721,7 @@
 /* 68 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-news-ui lt-full\" ref='page'>\r\n\t\t<div>\r\n\t\t\t<h2 class=\"wm-news-title\">{{newsInfo.title}}</h2>\r\n\t\t\t<div class=\"wm-news-time\">\r\n\t\t\t\t<span>{{newsInfo.createtime}} - </span>\r\n\t\t\t\t<span>浏览：{{newsInfo.visits}}</span>\r\n\t\t\t\t<span class='wm-news-encryption' v-if=\"newsInfo.encrypsign\"><img :src=\"imgs.encryption\" alt=\"\"></span>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-news-content\" v-html='newsInfo.content'></div>\r\n\t\t\t\r\n\t\t\t<div  v-if='newsInfo.encryptfile' class=\"wm-encryptfile-item\" >\r\n\t\t\t\t<div>以下为保密内容，请勿外传~~</div>\r\n\t\t\t\t<canvas :key='i' ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(\",\")'></canvas>\r\n\t\t\t</div>\r\n\t\t\t<div class='wm-news-download-C' v-if='newsInfo.download'>\r\n\t\t\t\t<div class='wm-news-download-link'>\r\n\t\t\t\t\t<img :src=\"imgs.link\" alt=\"\"> 附件\r\n\t\t\t\t</div>\r\n\t\t\t\t<div v-for='(file,i) in newsInfo.download.split(\",\")' :key=\"i\" class='wm-news-download'>\r\n\t\t\t\t\t<div><a :href=\"file\"><img :src=\"imgs[file.split('.').pop()]\" alt=\"\"></a></div>\r\n\t\t\t\t\t<div><a :href=\"file\">{{file.split('/').pop()}}</a></div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<h3 style=\"height:100px\"></h3>\r\n\t\t</div>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-news-ui lt-full\" ref='page'>\r\n\t\t<div>\r\n\t\t\t<h2 class=\"wm-news-title\">{{newsInfo.title}}</h2>\r\n\t\t\t<div class=\"wm-news-time\">\r\n\t\t\t\t<span>{{newsInfo.createtime}} - </span>\r\n\t\t\t\t<span>浏览：{{newsInfo.visits}}</span>\r\n\t\t\t\t<span class='wm-news-encryption' v-if=\"newsInfo.encrypsign\"><img :src=\"imgs.encryption\" alt=\"\"></span>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-news-content\" v-html='newsInfo.content'></div>\r\n\t\t\t\r\n\t\t\t<div  v-if='newsInfo.encryptfile' class=\"wm-encryptfile-item\" >\r\n\t\t\t\t<div>以下为保密内容，请勿外传~~</div>\r\n\t\t\t\t<canvas :key='i' ref='canvas' :width='width' :height='height' v-for='(file,i) in newsInfo.encryptfile.split(\",\")'></canvas>\r\n\t\t\t</div>\r\n\t\t\t<div class='wm-news-download-C' v-if='newsInfo.download'>\r\n\t\t\t\t<div class='wm-news-download-link'>\r\n\t\t\t\t\t<img :src=\"imgs.link\" alt=\"\"> 附件\r\n\t\t\t\t</div>\r\n\t\t\t\t<div v-for='(file,i) in newsInfo.download.split(\",\")' :key=\"i\" class='wm-news-download' v-tap='[download,file]'>\r\n\t\t\t\t\t<div><a :href=\"file\"><img :src=\"imgs[file.split('.').pop()]\" alt=\"\"></a></div>\r\n\t\t\t\t\t<div><a :href=\"file\">{{file.split('/').pop()}}</a></div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<h3 style=\"height:100px\"></h3>\r\n\t\t</div>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 69 */
